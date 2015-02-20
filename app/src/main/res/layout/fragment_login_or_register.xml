@@ -1,0 +1,23 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.indiana.maxandblack.domeafavor.LoginOrRegister">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <view
+        class="com.facebook.widget.LoginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/facebookLoginButton"
+        android:layout_marginTop="100dp"
+        android:layout_gravity="center_horizontal|top" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login Some Other Way"
+        android:id="@+id/otherLoginButton"
+        android:layout_marginTop="168dp"
+        android:layout_gravity="center" />
+</FrameLayout>
