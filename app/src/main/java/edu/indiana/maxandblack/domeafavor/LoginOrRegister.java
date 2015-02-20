@@ -77,7 +77,7 @@ public class LoginOrRegister extends Fragment implements OnClickListener {
         Session session = Session.getActiveSession();
         if (session != null &&
                 (session.isOpened() || session.isClosed()) ) {
-            onSessionStateChange(session, session.getState(), null);
+            //onSessionStateChange(session, session.getState(), null);
         }
 
         uiHelper.onResume();
