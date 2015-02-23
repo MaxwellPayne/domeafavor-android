@@ -17,5 +17,6 @@
     <!-- pragma region - Domeafavor API endpoints -->
     <string name="dmfv_host">http://52.10.123.150</string>
     <string name="dmfv_getuser_byfb">%1$s/users/facebook/%2$s</string>
+    <string name="dmfv_createuser_byfb">%1$s/users/facebook</string>
 
 </resources>

@@ -19,19 +19,21 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
+import edu.indiana.maxandblack.domeafavor.andrest.AndrestClient;
+import edu.indiana.maxandblack.domeafavor.andrest.RESTException;
+
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
-import edu.indiana.maxandblack.domeafavor.models.MainUser;
-import edu.indiana.maxandblack.domeafavor.models.User;
+import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
 
 
-public class LoginActivity extends ActionBarActivity implements LoginOrRegister.OnLoginOrRegisterInteractionListener {
+public class LoginActivity extends ActionBarActivity implements LoginOrRegister.OnLoginOrRegisterInteractionListener, RegisterFragment.RegisterFragmentListener {
 
     public static final String TAG = "LoginActivity";
     private GraphUser fbUserData;
-    private static final HttpClient domeafavorClient = new DefaultHttpClient();
+    private static final HttpClient httpDomeafavorClient = new DefaultHttpClient();
+    private static final AndrestClient andrestDomeafavorClient = new AndrestClient();
 
     private static String DMFV_API_ROOT;
     private enum AuthenticationMethod {
@@ -43,6 +45,20 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
         super.onCreate(savedInstanceState);
         DMFV_API_ROOT = getString(R.string.dmfv_host);
         setContentView(R.layout.activity_login);
+
+        if (findViewById(R.id.fragment_container) != null) {
+
+            if (savedInstanceState != null) {
+                /* @hack - I don't know what this does */
+                return;
+            }
+            /* initialize the login button fragment */
+            android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
+            LoginOrRegister loginFragment = new LoginOrRegister();
+            transaction.add(R.id.fragment_container, loginFragment);
+            transaction.commit();
+        }
     }
 
     @Override
@@ -65,8 +81,10 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
             public void onCompleted(GraphUser graphUser, Response response) {
                 if (Session.getActiveSession() == session && graphUser != null) {
                     fbUserData = graphUser;
+                    MainUser.getInstance().setFacebookId(fbUserData.getId());
+                    MainUser.getInstance().setFirstName(fbUserData.getFirstName());
+                    MainUser.getInstance().setLastName(fbUserData.getLastName());
 
-                    //loginToDomeafavor(graphUser.getInnerJSONObject(), AuthenticationMethod.FACEBOOK);
                     new GetUserProfile().execute(fbUserData.getId());
                 }
                 if (response.getError() != null) {
@@ -79,6 +97,42 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
 
     @Override
     public void onFacebookLoginFailure(LoginOrRegister loginOrRegister, Session session, Exception exception) {
+
+    }
+
+    @Override
+    public void onRegisterFormCompletion() {
+        /**
+         * User filled out the registration form and
+         * is now creating their profile. Do this async,
+         * and upon success transition into the app
+         */
+         AsyncTask<Void, Void, RESTException> registerTask =  new AsyncTask<Void, Void, RESTException>() {
+            @Override
+            protected RESTException doInBackground(Void... params) {
+                String createUserFbUrl = String.format(getString(R.string.dmfv_createuser_byfb) ,DMFV_API_ROOT);
+                try {
+                    JSONObject createUserResponse = andrestDomeafavorClient.post(createUserFbUrl, fbUserData.getInnerJSONObject());
+                    return null;
+                } catch (RESTException e) {
+                    Log.d(TAG, e.toString());
+                    return e;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(RESTException e) {
+                super.onPostExecute(e);
+
+                if (e != null) {
+                    Log.d(TAG, "Failed at registration - exiting");
+                    System.exit(1);
+                }
+
+                LoginActivity.this.segueIntoApp();
+            }
+        };
+        registerTask.execute();
 
     }
 
@@ -104,7 +158,7 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
             String url = String.format(getString(R.string.dmfv_getuser_byfb), DMFV_API_ROOT, fbId);
             HttpGet request = new HttpGet(url);
             try {
-                return domeafavorClient.execute(request);
+                return httpDomeafavorClient.execute(request);
             } catch (Exception e) {
                 Log.d(TAG, e.toString());
                 return null;
@@ -134,7 +188,16 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
                     LoginActivity.this.segueIntoApp();
                 } else if (statusCode == 204) {
                 /* create profile */
-                    Toast.makeText(getApplicationContext(), "{Zach's Register Screen Here}", Toast.LENGTH_LONG).show();
+                    if (fbUserData != null) {
+                        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+                        android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        RegisterFragment registerFragment = new RegisterFragment();
+                        fragmentTransaction.replace(R.id.fragment_container, registerFragment);
+                        fragmentTransaction.commit();
+                    } else {
+                        Log.d(TAG, "Attempting to register with strategy other than facebook Not Implemented");
+                        System.exit(1);
+                    }
                 } else {
                     /* got unexpected status code */
                     LoginActivity.this.handleFailedServerConnection();

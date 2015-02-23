@@ -1,8 +1,10 @@
-package edu.indiana.maxandblack.domeafavor.models;
+package edu.indiana.maxandblack.domeafavor.models.users;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.util.Log;
+
+import com.facebook.model.GraphUser;
 
 import java.util.Iterator;
 
@@ -15,6 +17,7 @@ public class User {
     protected String _id;
     protected String firstName;
     protected String lastName;
+    protected String facebookId;
 
     public User(JSONObject json) {
         if (json != null) {
@@ -43,6 +46,10 @@ public class User {
         this.lastName = lastName;
     }
 
+    protected void setFacebookId(String facebookId) {
+        this.facebookId = facebookId;
+    }
+
     protected void loadFromJson(JSONObject json) {
         Iterator<String> properties = json.keys();
         while (properties.hasNext()) {
@@ -57,6 +64,7 @@ public class User {
                     JSONObject facebookInfo = json.getJSONObject(key);
                     setFirstName(facebookInfo.getString("first_name"));
                     setLastName(facebookInfo.getString("last_name"));
+                    setFacebookId(facebookInfo.getString("facebook_id"));
                 }
             } catch (JSONException e) {
                 Log.d(TAG, e.toString());

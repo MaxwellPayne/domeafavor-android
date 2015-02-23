@@ -6,11 +6,9 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="edu.indiana.maxandblack.domeafavor.LoginActivity">
 
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="edu.indiana.maxandblack.domeafavor.LoginOrRegister"
-        android:id="@+id/loginOrRegisterFragment"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentStart="false" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/fragment_container"></LinearLayout>
 </RelativeLayout>

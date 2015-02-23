@@ -1,4 +1,17 @@
-package com.zackehh.andrest;
+package edu.indiana.maxandblack.domeafavor.andrest;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,21 +23,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
+import edu.indiana.maxandblack.domeafavor.models.server.DomeafavorHttpDelete;
+import edu.indiana.maxandblack.domeafavor.models.server.DomeafavorHttpGet;
+import edu.indiana.maxandblack.domeafavor.models.server.DomeafavorHttpPost;
+import edu.indiana.maxandblack.domeafavor.models.server.DomeafavorHttpPut;
 
 /**
  * Main controller for the REST client. The request you wish to make can
@@ -43,7 +45,7 @@ import org.json.JSONObject;
 public class AndrestClient {
 
 	// The client to use for requests
-	DefaultHttpClient client = new DefaultHttpClient();
+	public DefaultHttpClient client = new DefaultHttpClient();
 	
 	/**
 	 * Main controller for the client, has the ability to create any of the other methods. Call with 
@@ -54,7 +56,7 @@ public class AndrestClient {
 	 * @param 	data		the data you want to pass to the URL, can be null
 	 * @return 	JSON		the JSONObject returned from the request
 	 */
-	public JSONObject request(String url, String method, Map<String, Object> data) throws RESTException {
+	public JSONObject request(String url, String method, JSONObject data) throws RESTException {
 		if (method.matches("GET")) {
 			return get(url);
 		} else if (method.matches("POST")) {
@@ -66,16 +68,17 @@ public class AndrestClient {
 		}
 		throw new RESTException("Error! Incorrect method provided: " + method);
 	}
-	
+
 	/**
-	 * Calls a GET request on a given url. Doesn't take a data object (yet), so pass all get parameters 
+	 * Calls a GET request on a given url. Doesn't take a data object (yet), so pass all get parameters
 	 * alongside the url.
-	 * 
+	 *
 	 * @param 	url		the url you wish to connect to
-	 * @return 	JSON	the JSON response from the call		
+	 * @return 	JSON	the JSON response from the call
 	 */
 	public JSONObject get(String url) throws RESTException {
-		HttpGet request = new HttpGet(url);
+
+		DomeafavorHttpGet request = new DomeafavorHttpGet(url);
 		try {
 			HttpResponse response = client.execute(request);
 			int statusCode = response.getStatusLine().getStatusCode();
@@ -87,26 +90,25 @@ public class AndrestClient {
 			throw new RESTException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Calls a POST request on a given url. Takes a data object in the form of a HashMap to POST.
-	 * 
+	 *
 	 * @param 	url		the url you wish to connect to
 	 * @param	data	the data object to post to the url
-	 * @return 	JSON	the JSON response from the call		
+	 * @return 	JSON	the JSON response from the call
 	 */
-	public JSONObject post(String url, Map<String, Object> data) throws RESTException {
-		HttpPost request = new HttpPost(url);
-		List<NameValuePair> nameValuePairs = setParams(data);
+	public JSONObject post(String url, JSONObject data) throws RESTException {
+        DomeafavorHttpPost request = new DomeafavorHttpPost(url);
 		try {
-			request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			request.setEntity(new StringEntity(data.toString()));
 			HttpResponse response = client.execute(request);
 
 			int statusCode = response.getStatusLine().getStatusCode();
-			if(statusCode != 200){
+			if(!( statusCode == 200 || statusCode == 201 || statusCode == 202) ){
 				throw new Exception("Error executing POST request! Received error code: " + response.getStatusLine().getStatusCode());
 			}
-			
+
 			return new JSONObject(readInput(response.getEntity().getContent()));
 		} catch (Exception e) {
 			throw new RESTException(e.getMessage());
@@ -115,23 +117,22 @@ public class AndrestClient {
 
 	/**
 	 * Calls a PUT request on a given url. Takes a data object in the form of a HashMap to PUT.
-	 * 
+	 *
 	 * @param 	url		the url you wish to connect to
 	 * @param	data	the data object to post to the url
-	 * @return 	JSON	the JSON response from the call		
+	 * @return 	JSON	the JSON response from the call
 	 */
-	public JSONObject put(String url, Map<String, Object> data) throws RESTException {
-		HttpPut request = new HttpPut(url);
-		List<NameValuePair> nameValuePairs = setParams(data);
+	public JSONObject put(String url, JSONObject data) throws RESTException {
+		DomeafavorHttpPut request = new DomeafavorHttpPut(url);
 		try {
-			request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			request.setEntity(new StringEntity(data.toString()));
 			HttpResponse response = client.execute(request);
 
 			int statusCode = response.getStatusLine().getStatusCode();
-			if(statusCode != 200){
+			if(! (statusCode == 200 || statusCode == 202) ){
 				throw new Exception("Error executing PUT request! Received error code: " + response.getStatusLine().getStatusCode());
 			}
-			
+
 			return new JSONObject(readInput(response.getEntity().getContent()));
 		} catch (Exception e) {
 			throw new RESTException(e.getMessage());
@@ -140,12 +141,12 @@ public class AndrestClient {
 
 	/**
 	 * Calls a DELETE request on a given url.
-	 * 
+	 *
 	 * @param 	url		the url you wish to connect to
-	 * @return 	JSON	the JSON response from the call		
+	 * @return 	JSON	the JSON response from the call
 	 */
 	public JSONObject delete(String url) throws RESTException {
-		HttpDelete request = new HttpDelete(url);
+		DomeafavorHttpDelete request = new DomeafavorHttpDelete(url);
 		try {
 			HttpResponse response = client.execute(request);
 
@@ -153,7 +154,7 @@ public class AndrestClient {
 			if(statusCode != 200){
 				throw new Exception("Error executing DELETE request! Received error code: " + response.getStatusLine().getStatusCode());
 			}
-			
+
 			return new JSONObject(readInput(response.getEntity().getContent()));
 		} catch (Exception e) {
 			throw new RESTException(e.getMessage());

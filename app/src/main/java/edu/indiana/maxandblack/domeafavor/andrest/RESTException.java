@@ -1,4 +1,4 @@
-package com.zackehh.andrest;
+package edu.indiana.maxandblack.domeafavor.andrest;
 
 import org.json.JSONObject;
 
@@ -16,6 +16,7 @@ import org.json.JSONObject;
 public class RESTException extends Exception {
 	
 	private static final long serialVersionUID = 4491098305202657442L;
+    private JSONObject errorObject;
 
 	public RESTException(String message){
 		super(message);
@@ -23,5 +24,6 @@ public class RESTException extends Exception {
 	
 	public RESTException(JSONObject errorObject){
 		super(errorObject.toString());
+        this.errorObject = errorObject;
 	}
 }
