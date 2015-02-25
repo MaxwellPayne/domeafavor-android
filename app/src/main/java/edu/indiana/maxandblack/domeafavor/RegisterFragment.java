@@ -56,6 +56,10 @@ public class RegisterFragment extends Fragment {
         mListener.onRegisterFormCompletion();
     }
 
+    private void dismiss() {
+        mListener.onFormDismiss();
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -69,6 +73,7 @@ public class RegisterFragment extends Fragment {
     public interface RegisterFragmentListener {
         /* user finished filling form, ready to create user */
         public void onRegisterFormCompletion();
+        public void onFormDismiss();
     }
 
 }

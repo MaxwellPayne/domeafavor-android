@@ -1,11 +1,15 @@
 package edu.indiana.maxandblack.domeafavor.models.users;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.location.Location;
 import android.util.Log;
 
 import com.facebook.model.GraphUser;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -18,6 +22,8 @@ public class User {
     protected String firstName;
     protected String lastName;
     protected String facebookId;
+    protected Location loc;
+    protected GraphUser facebookProfile;
 
     public User(JSONObject json) {
         if (json != null) {
@@ -50,6 +56,14 @@ public class User {
         this.facebookId = facebookId;
     }
 
+    protected void setLoc(Location loc) {
+        this.loc = loc;
+    }
+
+    protected void setFacebookProfile(GraphUser graphUser) {
+        this.facebookProfile = graphUser;
+    }
+
     protected void loadFromJson(JSONObject json) {
         Iterator<String> properties = json.keys();
         while (properties.hasNext()) {
@@ -64,7 +78,13 @@ public class User {
                     JSONObject facebookInfo = json.getJSONObject(key);
                     setFirstName(facebookInfo.getString("first_name"));
                     setLastName(facebookInfo.getString("last_name"));
-                    setFacebookId(facebookInfo.getString("facebook_id"));
+                    setFacebookId(facebookInfo.getString("id"));
+                } else if (key.equals("loc")) {
+                    JSONArray locArray = json.getJSONArray(key);
+                    Location location = new Location("");
+                    location.setLatitude(locArray.getDouble(0));
+                    location.setLatitude(locArray.getDouble(1));
+                    setLoc(location);
                 }
             } catch (JSONException e) {
                 Log.d(TAG, e.toString());

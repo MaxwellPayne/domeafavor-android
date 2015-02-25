@@ -84,6 +84,7 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
                     MainUser.getInstance().setFacebookId(fbUserData.getId());
                     MainUser.getInstance().setFirstName(fbUserData.getFirstName());
                     MainUser.getInstance().setLastName(fbUserData.getLastName());
+                    MainUser.getInstance().setFacebookProfile(fbUserData);
 
                     new GetUserProfile().execute(fbUserData.getId());
                 }
@@ -112,7 +113,10 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
             protected RESTException doInBackground(Void... params) {
                 String createUserFbUrl = String.format(getString(R.string.dmfv_createuser_byfb) ,DMFV_API_ROOT);
                 try {
-                    JSONObject createUserResponse = andrestDomeafavorClient.post(createUserFbUrl, fbUserData.getInnerJSONObject());
+                    JSONObject createUserResponse =
+                            andrestDomeafavorClient.post(createUserFbUrl, MainUser.getInstance().getPOSTJson());
+                    /* unpack created user json into the MainUser */
+                    MainUser.getInstance().loadFromJson(createUserResponse);
                     return null;
                 } catch (RESTException e) {
                     Log.d(TAG, e.toString());
@@ -128,12 +132,17 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
                     Log.d(TAG, "Failed at registration - exiting");
                     System.exit(1);
                 }
-
+                MainUser u = MainUser.getInstance();
                 LoginActivity.this.segueIntoApp();
             }
         };
         registerTask.execute();
 
+    }
+
+    @Override
+    public void onFormDismiss() {
+        segueIntoApp();
     }
 
     private void segueIntoApp() {
