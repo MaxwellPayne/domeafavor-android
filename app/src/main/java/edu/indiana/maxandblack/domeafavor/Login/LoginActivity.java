@@ -1,5 +1,6 @@
-package edu.indiana.maxandblack.domeafavor;
+package edu.indiana.maxandblack.domeafavor.Login;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
+import edu.indiana.maxandblack.domeafavor.FindOddjobActivity;
+import edu.indiana.maxandblack.domeafavor.R;
 import edu.indiana.maxandblack.domeafavor.andrest.AndrestClient;
 import edu.indiana.maxandblack.domeafavor.andrest.RESTException;
 
@@ -148,6 +151,10 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
     private void segueIntoApp() {
         /* all logging in is done, transition into the rest of app */
         Toast.makeText(getApplicationContext(), "Logged in as " + MainUser.getInstance().toString(), Toast.LENGTH_LONG).show();
+        /* @hack - transitioning directly into FindOddjobActivity; won't actually do this in real app */
+        Intent segueIntoAppIntent = new Intent(this, FindOddjobActivity.class);
+        startActivity(segueIntoAppIntent);
+        finish();
     }
 
     private void handleFailedServerConnection() {

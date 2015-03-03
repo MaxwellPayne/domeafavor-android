@@ -40,6 +40,26 @@ public class User {
         return _id;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public GraphUser getFacebookProfile() {
+        return facebookProfile;
+    }
+
+    public Location getLoc() {
+        return loc;
+    }
+
+    public String getFacebookId() {
+        return facebookId;
+    }
+
     protected void set_id(String _id) {
         this._id = _id;
     }

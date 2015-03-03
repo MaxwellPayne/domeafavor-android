@@ -6,17 +6,19 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
     <string name="fb_app_id">927777533913452</string>
     <string name="title_facebook_login">Facebook Login</string>
+
     <string-array name="fb_read_permissions">
         <item>public_profile</item>
-        <!--<item>user_birthday</item>-->
+        <!-- <item>user_birthday</item> -->
     </string-array>
 
     <!-- pragma region - Domeafavor API endpoints -->
     <string name="dmfv_host">http://52.10.123.150</string>
     <string name="dmfv_getuser_byfb">%1$s/users/facebook/%2$s</string>
     <string name="dmfv_createuser_byfb">%1$s/users/facebook</string>
+    <string name="oddjobFragmentDateCreated">Date Created:</string>
+    <string name="title_activity_find_oddjob">FindOddjobActivity</string>
 
 </resources>

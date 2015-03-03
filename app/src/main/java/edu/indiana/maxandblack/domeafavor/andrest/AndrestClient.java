@@ -3,6 +3,7 @@ package edu.indiana.maxandblack.domeafavor.andrest;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.entity.StringEntity;
@@ -10,6 +11,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,20 +78,36 @@ public class AndrestClient {
 	 * @param 	url		the url you wish to connect to
 	 * @return 	JSON	the JSON response from the call
 	 */
-	public JSONObject get(String url) throws RESTException {
 
-		DomeafavorHttpGet request = new DomeafavorHttpGet(url);
-		try {
-			HttpResponse response = client.execute(request);
-			int statusCode = response.getStatusLine().getStatusCode();
-			if(statusCode != 200){
-				throw new Exception("Error executing GET request! Received error code: " + response.getStatusLine().getStatusCode());
-			}
-			return new JSONObject(readInput(response.getEntity().getContent()));
-		} catch (Exception e) {
-			throw new RESTException(e.getMessage());
-		}
+    private String baseGet(String url) throws RESTException {
+        DomeafavorHttpGet request = new DomeafavorHttpGet(url);
+        try {
+            HttpResponse response = client.execute(request);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if(statusCode != 200){
+                throw new Exception("Error executing GET request! Received error code: " + response.getStatusLine().getStatusCode());
+            }
+            return readInput(response.getEntity().getContent());
+        } catch (Exception e) {
+            throw new RESTException(e.getMessage());
+        }
+    }
+
+	public JSONObject get(String url) throws RESTException {
+      try {
+          return new JSONObject(baseGet(url));
+      } catch (Exception e) {
+          throw new RESTException(e.getMessage());
+      }
 	}
+
+    public JSONArray getArray(String url) throws RESTException {
+        try {
+            return new JSONArray(baseGet(url));
+        } catch (Exception e) {
+            throw new RESTException(e.getMessage());
+        }
+    }
 
 	/**
 	 * Calls a POST request on a given url. Takes a data object in the form of a HashMap to POST.

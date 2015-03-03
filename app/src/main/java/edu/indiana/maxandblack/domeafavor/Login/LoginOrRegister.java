@@ -1,4 +1,4 @@
-package edu.indiana.maxandblack.domeafavor;
+package edu.indiana.maxandblack.domeafavor.Login;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import com.facebook.widget.LoginButton;
 import android.view.View.OnClickListener;
 import android.util.Log;
 
-import java.util.ArrayList;
+import edu.indiana.maxandblack.domeafavor.R;
 
 /**
  * A simple {@link Fragment} subclass.

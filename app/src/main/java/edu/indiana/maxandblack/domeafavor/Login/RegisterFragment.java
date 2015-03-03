@@ -1,20 +1,19 @@
-package edu.indiana.maxandblack.domeafavor;
+package edu.indiana.maxandblack.domeafavor.Login;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.model.GraphUser;
+import edu.indiana.maxandblack.domeafavor.R;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link edu.indiana.maxandblack.domeafavor.RegisterFragment.RegisterFragmentListener} interface
+ * {@link RegisterFragment.RegisterFragmentListener} interface
  * to handle interaction events.
  */
 public class RegisterFragment extends Fragment {
