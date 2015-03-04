@@ -87,10 +87,11 @@ public class Oddjob {
                     JSONArray locArray = json.getJSONArray(key);
                     Location location = new Location("");
                     location.setLatitude(locArray.getDouble(0));
-                    location.setLatitude(locArray.getDouble(1));
+                    location.setLongitude(locArray.getDouble(1));
                     keyLocation = location;
                 } else if (key.equals("expiry")) {
-                    long utcTimestamp = json.getInt(key);
+                    JSONObject dateObject = json.getJSONObject(key);
+                    long utcTimestamp = dateObject.getInt("$date");
                     expiry = new Date(utcTimestamp * 1000);
                 } else if (key.equals("authorized_lackeys")) {
                     JSONArray lackeyIdArray = json.getJSONArray(key);

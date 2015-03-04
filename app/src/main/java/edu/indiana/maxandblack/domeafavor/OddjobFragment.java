@@ -1,6 +1,7 @@
 package edu.indiana.maxandblack.domeafavor;
 
 import android.app.Activity;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,7 +9,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
 
@@ -19,13 +26,16 @@ import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
  * {@link edu.indiana.maxandblack.domeafavor.OddjobFragment.OddjobFragmentListener} interface
  * to handle interaction events.
  */
-public class OddjobFragment extends Fragment {
+public class OddjobFragment extends Fragment implements View.OnClickListener {
 
     private OddjobFragmentListener mListener;
     private Oddjob job;
 
     /* UI widgets */
     private TextView oddjobTitleTextView;
+    private TextView oddjobExpiresDateTextView;
+    private TextView oddjobPriceTextView;
+    private Button   oddjobViewLocationButton;
 
     public OddjobFragment() {
         // Required empty public constructor
@@ -46,13 +56,26 @@ public class OddjobFragment extends Fragment {
         oddjobTitleTextView = (TextView) v.findViewById(R.id.oddjobTitleTextView);
         oddjobTitleTextView.setText(job.getTitle());
 
+        oddjobExpiresDateTextView = (TextView) v.findViewById(R.id.oddjobExpiresDateTextView);
+        String formattedExpiry = new SimpleDateFormat("hh:mm a MMM dd", Locale.US)
+                                        .format(job.getExpiry());
+        oddjobExpiresDateTextView.setText(formattedExpiry);
+
+        oddjobPriceTextView = (TextView) v.findViewById(R.id.oddjobPriceTextView);
+        /* @hack - .getCurrencyInstance() DOES NOT guarantee consistency with server's dollar currency */
+        NumberFormat dollarFormatter = NumberFormat.getCurrencyInstance();
+        oddjobPriceTextView.setText(dollarFormatter.format(job.getPrice()));
+
+        oddjobViewLocationButton = (Button) v.findViewById(R.id.oddjobViewLocationButton);
+        oddjobViewLocationButton.setOnClickListener(this);
+
         return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            //mListener.onFragmentInteraction(uri);
         }
     }
 
@@ -80,6 +103,14 @@ public class OddjobFragment extends Fragment {
         job = j;
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v == oddjobViewLocationButton) {
+            /* user wants to view this oddjob's location */
+            mListener.onLocationClick(job.getKeyLocation());
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -91,8 +122,7 @@ public class OddjobFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OddjobFragmentListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        public void onLocationClick(Location loc);
     }
 
 }

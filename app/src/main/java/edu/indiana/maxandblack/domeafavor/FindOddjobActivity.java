@@ -1,5 +1,7 @@
 package edu.indiana.maxandblack.domeafavor;
 
+import android.app.AlertDialog;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
+import android.content.Intent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -117,8 +120,21 @@ public class FindOddjobActivity extends ActionBarActivity implements OddjobListF
         pushOddjobTransaction.commit();
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-        /* @hack - OddjobFragment has no use for its delegate thus far */
+    /** Conform to OddjobFragmentListener **/
+    public void onLocationClick(Location loc) {
+        /* view this loc in maps app */
+        String uriString = String.format(getString(R.string.maps_intent_lat_lon_format), loc.getLatitude(), loc.getLongitude());
+        Intent showMap = new Intent(Intent.ACTION_VIEW);
+        showMap.setData(Uri.parse(uriString));
+        if (showMap.resolveActivity(getPackageManager()) != null) {
+            /* can open in maps app */
+            startActivity(showMap);
+        } else {
+            /* maps app not installed or something */
+            new AlertDialog.Builder(this)
+                    .setTitle("No Maps App")
+                    .setMessage("Need to be able to open in Maps to view locations")
+                    .show();
+        }
     }
 }
