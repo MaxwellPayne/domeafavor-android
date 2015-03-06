@@ -24,5 +24,6 @@
     <string name="fragment_oddjob_expiry_label">Expires:</string>
     <string name="fragment_oddjob_price_label">Price:</string>
     <string name="fragment_oddjob_view_location_button">View Location</string>
+    <string name="title_activity_main_menu">MainMenuActivity</string>
 
 </resources>
