@@ -19,11 +19,20 @@
     <string name="dmfv_host">http://52.10.123.150</string>
     <string name="dmfv_getuser_byfb">%1$s/users/facebook/%2$s</string>
     <string name="dmfv_createuser_byfb">%1$s/users/facebook</string>
+    <string name="dmfv_create_oddjob">/oddjobs</string>
     <string name="oddjobFragmentDateCreated">Date Created:</string>
     <string name="title_activity_find_oddjob">FindOddjobActivity</string>
     <string name="fragment_oddjob_expiry_label">Expires:</string>
     <string name="fragment_oddjob_price_label">Price:</string>
     <string name="fragment_oddjob_view_location_button">View Location</string>
     <string name="title_activity_main_menu">MainMenuActivity</string>
+    <string name="title_activity_create_oddjob">CreateOddjobActivity</string>
+    
+
+    <!-- pragma region - CreateOddjob -->
+    <string name="create_oddjob_svprogress">Creating...</string>
+
+    <!-- pragma region - error messages -->
+    <string name="general_server_error">Problem communicating with server</string>
 
 </resources>

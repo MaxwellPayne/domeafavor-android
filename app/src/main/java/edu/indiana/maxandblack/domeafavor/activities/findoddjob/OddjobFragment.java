@@ -1,10 +1,9 @@
-package edu.indiana.maxandblack.domeafavor;
+package edu.indiana.maxandblack.domeafavor.activities.findoddjob;
 
 import android.app.Activity;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,18 +11,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import edu.indiana.maxandblack.domeafavor.R;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link edu.indiana.maxandblack.domeafavor.OddjobFragment.OddjobFragmentListener} interface
+ * {@link OddjobFragment.OddjobFragmentListener} interface
  * to handle interaction events.
  */
 public class OddjobFragment extends Fragment implements View.OnClickListener {

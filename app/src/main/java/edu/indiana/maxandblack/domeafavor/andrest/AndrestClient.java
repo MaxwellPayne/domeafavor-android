@@ -1,5 +1,7 @@
 package edu.indiana.maxandblack.domeafavor.andrest;
 
+import edu.indiana.maxandblack.domeafavor.andrest.RESTException.StatusCode;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -48,6 +50,7 @@ public class AndrestClient {
 
 	// The client to use for requests
 	public DefaultHttpClient client = new DefaultHttpClient();
+
 	
 	/**
 	 * Main controller for the client, has the ability to create any of the other methods. Call with 
@@ -68,7 +71,7 @@ public class AndrestClient {
 		} else if (method.matches("DELETE")) {
 			return delete(url);
 		}
-		throw new RESTException("Error! Incorrect method provided: " + method);
+		throw new RESTException("Error! Incorrect method provided: " + method, StatusCode.FAILED_CONNECTION);
 	}
 
 	/**
@@ -81,31 +84,42 @@ public class AndrestClient {
 
     private String baseGet(String url) throws RESTException {
         DomeafavorHttpGet request = new DomeafavorHttpGet(url);
+        StatusCode errorStatus = StatusCode.FAILED_CONNECTION;
         try {
             HttpResponse response = client.execute(request);
             int statusCode = response.getStatusLine().getStatusCode();
             if(statusCode != 200){
-                throw new Exception("Error executing GET request! Received error code: " + response.getStatusLine().getStatusCode());
+                errorStatus = StatusCode.fromInt(statusCode);
+                throw new RESTException("Error executing GET request! Received error code: " + response.getStatusLine().getStatusCode(),
+                        errorStatus);
             }
             return readInput(response.getEntity().getContent());
         } catch (Exception e) {
-            throw new RESTException(e.getMessage());
+            throw new RESTException(e.getMessage(), errorStatus);
         }
     }
 
 	public JSONObject get(String url) throws RESTException {
+        StatusCode errorStatus = StatusCode.FAILED_CONNECTION;
       try {
           return new JSONObject(baseGet(url));
-      } catch (Exception e) {
-          throw new RESTException(e.getMessage());
+      } catch (RESTException e) {
+          errorStatus = e.getStatusCode();
+          throw new RESTException(e.getMessage(), errorStatus);
+      } catch (JSONException e) {
+          throw new RESTException(e.getMessage(), errorStatus);
       }
-	}
+    }
 
     public JSONArray getArray(String url) throws RESTException {
+        StatusCode errorStatus = StatusCode.FAILED_CONNECTION;
         try {
             return new JSONArray(baseGet(url));
-        } catch (Exception e) {
-            throw new RESTException(e.getMessage());
+        } catch (RESTException e) {
+            errorStatus = e.getStatusCode();
+            throw new RESTException(e.getMessage(), errorStatus);
+        } catch (JSONException e) {
+            throw new RESTException(e.getMessage(), errorStatus);
         }
     }
 
@@ -118,18 +132,20 @@ public class AndrestClient {
 	 */
 	public JSONObject post(String url, JSONObject data) throws RESTException {
         DomeafavorHttpPost request = new DomeafavorHttpPost(url);
+        StatusCode errorStatus = StatusCode.FAILED_CONNECTION;
 		try {
 			request.setEntity(new StringEntity(data.toString()));
 			HttpResponse response = client.execute(request);
 
 			int statusCode = response.getStatusLine().getStatusCode();
-			if(!( statusCode == 200 || statusCode == 201 || statusCode == 202) ){
-				throw new Exception("Error executing POST request! Received error code: " + response.getStatusLine().getStatusCode());
+			if(!( statusCode == 200 || statusCode == 201 || statusCode == 202) ) {
+                errorStatus = StatusCode.fromInt(statusCode);
+				throw new RESTException("Error executing POST request! Received error code: " + response.getStatusLine().getStatusCode(), errorStatus);
 			}
 
 			return new JSONObject(readInput(response.getEntity().getContent()));
 		} catch (Exception e) {
-			throw new RESTException(e.getMessage());
+			throw new RESTException(e.getMessage(), errorStatus);
 		}
 	}
 
@@ -142,18 +158,19 @@ public class AndrestClient {
 	 */
 	public JSONObject put(String url, JSONObject data) throws RESTException {
 		DomeafavorHttpPut request = new DomeafavorHttpPut(url);
+        StatusCode errorStatus = StatusCode.FAILED_CONNECTION;
 		try {
 			request.setEntity(new StringEntity(data.toString()));
 			HttpResponse response = client.execute(request);
 
 			int statusCode = response.getStatusLine().getStatusCode();
 			if(! (statusCode == 200 || statusCode == 202) ){
-				throw new Exception("Error executing PUT request! Received error code: " + response.getStatusLine().getStatusCode());
+                errorStatus = StatusCode.fromInt(statusCode);
+				throw new RESTException("Error executing PUT request! Received error code: " + response.getStatusLine().getStatusCode(), errorStatus);
 			}
-
 			return new JSONObject(readInput(response.getEntity().getContent()));
 		} catch (Exception e) {
-			throw new RESTException(e.getMessage());
+			throw new RESTException(e.getMessage(), errorStatus);
 		}
 	}
 
@@ -165,17 +182,18 @@ public class AndrestClient {
 	 */
 	public JSONObject delete(String url) throws RESTException {
 		DomeafavorHttpDelete request = new DomeafavorHttpDelete(url);
+        StatusCode errorStatus = StatusCode.FAILED_CONNECTION;
 		try {
 			HttpResponse response = client.execute(request);
 
 			int statusCode = response.getStatusLine().getStatusCode();
 			if(statusCode != 200){
-				throw new Exception("Error executing DELETE request! Received error code: " + response.getStatusLine().getStatusCode());
+                errorStatus = StatusCode.fromInt(statusCode);
+				throw new RESTException("Error executing DELETE request! Received error code: " + response.getStatusLine().getStatusCode(), errorStatus);
 			}
-
 			return new JSONObject(readInput(response.getEntity().getContent()));
 		} catch (Exception e) {
-			throw new RESTException(e.getMessage());
+			throw new RESTException(e.getMessage(), errorStatus);
 		}
 	}
 	

@@ -1,4 +1,4 @@
-package edu.indiana.maxandblack.domeafavor;
+package edu.indiana.maxandblack.domeafavor.activities.findoddjob;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,13 +13,14 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import edu.indiana.maxandblack.domeafavor.R;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
  * <p/>
- * Activities containing this fragment MUST implement the {@link edu.indiana.maxandblack.domeafavor.OddjobListFragment.OddjobListFragmentListener}
+ * Activities containing this fragment MUST implement the {@link OddjobListFragment.OddjobListFragmentListener}
  * interface.
  */
 public class OddjobListFragment extends ListFragment {

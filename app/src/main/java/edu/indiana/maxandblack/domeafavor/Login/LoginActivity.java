@@ -20,7 +20,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
-import edu.indiana.maxandblack.domeafavor.FindOddjobActivity;
+import edu.indiana.maxandblack.domeafavor.MainMenuActivity;
 import edu.indiana.maxandblack.domeafavor.R;
 import edu.indiana.maxandblack.domeafavor.andrest.AndrestClient;
 import edu.indiana.maxandblack.domeafavor.andrest.RESTException;
@@ -88,6 +88,7 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
                     MainUser.getInstance().setFirstName(fbUserData.getFirstName());
                     MainUser.getInstance().setLastName(fbUserData.getLastName());
                     MainUser.getInstance().setFacebookProfile(fbUserData);
+                    MainUser.getInstance().setToken(new OAuth2AccessToken(session));
 
                     new GetUserProfile().execute(fbUserData.getId());
                 }
@@ -151,8 +152,7 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
     private void segueIntoApp() {
         /* all logging in is done, transition into the rest of app */
         Toast.makeText(getApplicationContext(), "Logged in as " + MainUser.getInstance().toString(), Toast.LENGTH_LONG).show();
-        /* @hack - transitioning directly into FindOddjobActivity; won't actually do this in real app */
-        Intent segueIntoAppIntent = new Intent(this, FindOddjobActivity.class);
+        Intent segueIntoAppIntent = new Intent(this, MainMenuActivity.class);
         startActivity(segueIntoAppIntent);
         finish();
     }

@@ -1,12 +1,10 @@
-package edu.indiana.maxandblack.domeafavor;
+package edu.indiana.maxandblack.domeafavor.activities.findoddjob;
 
 import android.app.AlertDialog;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -16,12 +14,10 @@ import android.content.Intent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Objects;
 
+import edu.indiana.maxandblack.domeafavor.R;
 import edu.indiana.maxandblack.domeafavor.andrest.AndrestClient;
 import edu.indiana.maxandblack.domeafavor.andrest.RESTException;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;

@@ -12,12 +12,15 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.indiana.maxandblack.domeafavor.Login.OAuth2AccessToken;
+
 /**
  * Created by Max on 2/20/15.
  */
 public class MainUser extends User {
     private static final String TAG = "MainUser";
     private static MainUser ourInstance = new MainUser();
+    private static OAuth2AccessToken token;
 
     public static MainUser getInstance() {
         return ourInstance;
@@ -25,6 +28,10 @@ public class MainUser extends User {
 
     private MainUser() {
         super(null);
+    }
+
+    public static OAuth2AccessToken getToken() {
+        return token;
     }
 
     public void set_id(String _id) {
@@ -51,6 +58,10 @@ public class MainUser extends User {
         super.setFacebookProfile(graphUser);
     }
 
+    public static void setToken(OAuth2AccessToken token) {
+        MainUser.token = token;
+    }
+
     public void loadFromJson(JSONObject json) {
         super.loadFromJson(json);
     }
@@ -63,6 +74,9 @@ public class MainUser extends User {
         if (facebookId != null) { jsonData.put("facebook_id", facebookId); }
         if (facebookProfile != null) {
             jsonData.put("facebook_profile", facebookProfile.getInnerJSONObject());
+        }
+        if (token != null) {
+            jsonData.put("token", token.toJson());
         }
         if (loc != null) {
             try {

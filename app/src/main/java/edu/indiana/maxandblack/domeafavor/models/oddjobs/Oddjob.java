@@ -28,6 +28,10 @@ public class Oddjob {
     protected Date expiry;
     protected String[] authorizedLackeys;
 
+    public Oddjob() {
+        super();
+    }
+
     public Oddjob(JSONObject json) {
         super();
         loadFromJson(json);
@@ -59,6 +63,34 @@ public class Oddjob {
 
     public Date getExpiry() {
         return expiry;
+    }
+
+    public void setSolicitorId(String solicitorId) {
+        this.solicitorId = solicitorId;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setKeyLocation(Location keyLocation) {
+        this.keyLocation = keyLocation;
+    }
+
+    public void setExpiry(Date expiry) {
+        this.expiry = expiry;
+    }
+
+    public void setAuthorizedLackeys(String[] authorizedLackeys) {
+        this.authorizedLackeys = authorizedLackeys;
     }
 
     private void loadFromJson(JSONObject json) {
@@ -97,7 +129,8 @@ public class Oddjob {
                     JSONArray lackeyIdArray = json.getJSONArray(key);
                     String[] lackeyStringArray = new String[lackeyIdArray.length()];
                     for (int i = 0; i < lackeyIdArray.length(); i++) {
-                        lackeyStringArray[i] = (String) lackeyIdArray.get(i);
+                        JSONObject oIdObj = lackeyIdArray.getJSONObject(i);
+                        lackeyStringArray[i] = oIdObj.getString("$oid");
                     }
                     authorizedLackeys = lackeyStringArray;
                 }
