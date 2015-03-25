@@ -12,8 +12,10 @@
 
     <string-array name="fb_read_permissions">
         <item>public_profile</item>
+        <item>user_friends</item>
         <!-- <item>user_birthday</item> -->
     </string-array>
+    <string name="facebook_friends_endpoint">/%1$s/friends</string>
 
     <!-- pragma region - Domeafavor API endpoints -->
     <string name="dmfv_host">http://52.10.123.150</string>
@@ -34,5 +36,10 @@
 
     <!-- pragma region - error messages -->
     <string name="general_server_error">Problem communicating with server</string>
+
+    <!-- pragma region - server success messages -->
+    <string name="server_success">Success!</string>
+    <string name="title_activity_select_friends">SelectFriendsActivity</string>
+    <string name="select_friends_done_button">Done</string>
 
 </resources>

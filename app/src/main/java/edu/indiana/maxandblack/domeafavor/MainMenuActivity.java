@@ -7,11 +7,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.facebook.Session;
+
+import edu.indiana.maxandblack.domeafavor.Login.LoginActivity;
+import edu.indiana.maxandblack.domeafavor.Login.LoginOrRegister;
 import edu.indiana.maxandblack.domeafavor.activities.createoddjob.CreateOddjobActivity;
 import edu.indiana.maxandblack.domeafavor.activities.findoddjob.FindOddjobActivity;
 
 
-public class MainMenuActivity extends ActionBarActivity {
+public class MainMenuActivity extends ActionBarActivity implements LoginOrRegister.OnLoginOrRegisterInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,4 +58,20 @@ public class MainMenuActivity extends ActionBarActivity {
         startActivity(createOddjobsIntent);
     }
 
+    @Override
+    public void onFacebookLoginFailure(LoginOrRegister loginFragment, Session session, Exception exception) {
+        /* pass */
+    }
+
+    @Override
+    public void onFacebookLoginSuccess(LoginOrRegister loginFragment, Session session) {
+        /* pass */
+    }
+
+    @Override
+    public void onFacebookLogout(LoginOrRegister loginFragment, Session session) {
+        Intent returnToLoginIntent = new Intent(this, LoginActivity.class);
+        startActivity(returnToLoginIntent);
+        finish();
+    }
 }

@@ -1,5 +1,7 @@
 package edu.indiana.maxandblack.domeafavor.models.oddjobs;
 
+import edu.indiana.maxandblack.domeafavor.models.Oid;
+
 import android.graphics.Point;
 import android.location.Location;
 import android.util.Log;
@@ -8,9 +10,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Created by Max on 3/1/15.
@@ -18,15 +24,15 @@ import java.util.Iterator;
 public class Oddjob {
 
     private final String TAG = "Oddjob";
-    protected String _id;
-    protected String solicitorId;
+    protected Oid _id;
+    protected Oid solicitorId;
     protected String title;
     protected String description;
     protected double price;
     protected Location keyLocation;
     // TODO: handle locale-specific times
     protected Date expiry;
-    protected String[] authorizedLackeys;
+    protected Oid[] authorizedLackeys;
 
     public Oddjob() {
         super();
@@ -38,7 +44,7 @@ public class Oddjob {
     }
 
     public String get_id() {
-        return _id;
+        return _id.toString();
     }
 
     public double getPrice() {
@@ -53,7 +59,7 @@ public class Oddjob {
         return description;
     }
 
-    public String getSolicitorId() {
+    public Oid getSolicitorId() {
         return solicitorId;
     }
 
@@ -65,7 +71,7 @@ public class Oddjob {
         return expiry;
     }
 
-    public void setSolicitorId(String solicitorId) {
+    public void setSolicitorId(Oid solicitorId) {
         this.solicitorId = solicitorId;
     }
 
@@ -89,8 +95,35 @@ public class Oddjob {
         this.expiry = expiry;
     }
 
-    public void setAuthorizedLackeys(String[] authorizedLackeys) {
+    public void setAuthorizedLackeys(Oid[] authorizedLackeys) {
         this.authorizedLackeys = authorizedLackeys;
+    }
+
+    public JSONObject getPOSTJson() {
+        /* serialize location into mongodb's [lat, lon] format */
+        final Double[] locArray = {keyLocation.getLatitude(), keyLocation.getLongitude()};
+
+        HashMap<String, Object > jsonMap = new HashMap<String, Object>(){{
+            put("solicitor", solicitorId.toString());
+            put("title", title);
+            put("expiry", expiry);
+            put("description", description);
+            put("price", price);
+            put("key_location", locArray);
+            put("authorized_lackeys", authorizedLackeys);
+        }};
+        try {
+            Iterator<Map.Entry<String, Object>> jsonMapIterator = jsonMap.entrySet().iterator();
+            while (jsonMapIterator.hasNext()) {
+                Map.Entry<String, Object> entry = jsonMapIterator.next();
+                /* ensure that none of the properties are null */
+                assert entry.getValue() != null;
+            }
+            return new JSONObject(jsonMap);
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
     private void loadFromJson(JSONObject json) {
@@ -101,11 +134,11 @@ public class Oddjob {
                 if (key.equals("_id")) {
                     /* drill down to get mongodb _id */
                     JSONObject oId = json.getJSONObject(key);
-                    _id = oId.getString("$oid");
+                    _id = new Oid(oId);
                 } else if (key.equals("solicitor")) {
                     JSONObject obj = json.getJSONObject(key);
                     if (obj.has("$oid")) {
-                        solicitorId = obj.getString("$oid");
+                        solicitorId = new Oid(obj);
                     } else {
                         // TODO: solicitor is passed as full JSON, not just an _id string
                     }
@@ -127,10 +160,10 @@ public class Oddjob {
                     expiry = new Date(utcTimestamp * 1000);
                 } else if (key.equals("authorized_lackeys")) {
                     JSONArray lackeyIdArray = json.getJSONArray(key);
-                    String[] lackeyStringArray = new String[lackeyIdArray.length()];
+                    Oid[] lackeyStringArray = new Oid[lackeyIdArray.length()];
                     for (int i = 0; i < lackeyIdArray.length(); i++) {
                         JSONObject oIdObj = lackeyIdArray.getJSONObject(i);
-                        lackeyStringArray[i] = oIdObj.getString("$oid");
+                        lackeyStringArray[i] = new Oid(oIdObj);
                     }
                     authorizedLackeys = lackeyStringArray;
                 }

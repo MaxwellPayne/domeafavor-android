@@ -1,5 +1,7 @@
 package edu.indiana.maxandblack.domeafavor.models.users;
 
+import edu.indiana.maxandblack.domeafavor.models.Oid;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,9 +20,10 @@ import java.util.Iterator;
 public class User {
 
     private static final String TAG = "User";
-    protected String _id;
+    protected Oid _id;
     protected String firstName;
     protected String lastName;
+    protected String username;
     protected String facebookId;
     protected Location loc;
     protected GraphUser facebookProfile;
@@ -36,8 +39,12 @@ public class User {
         return String.format("<User _id: %s, firstName: %s, lastName: %s>", _id, firstName, lastName);
     }
 
-    public String get_id() {
+    public Oid get_id() {
         return _id;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getFirstName() {
@@ -61,7 +68,11 @@ public class User {
     }
 
     protected void set_id(String _id) {
-        this._id = _id;
+        this._id = new Oid(_id);
+    }
+
+    protected void setUsername(String uname) {
+        this.username = uname;
     }
 
     protected void setFirstName(String firstName) {
@@ -93,9 +104,17 @@ public class User {
                     /* drill down to get mongodb _id */
                     JSONObject oId = json.getJSONObject(key);
                     set_id((String) oId.get("$oid"));
-                } else if (key.equals("facebook_profile")) {
+                } else if (key.equals("username")) {
+                    username = json.getString(key);
+                } else if (key.equals("first_name")) {
+                    setFirstName(json.getString(key));
+                } else if (key.equals("last_name")) {
+                    setLastName(json.getString(key));
+                }
+                else if (key.equals("facebook_profile")) {
                     /* drill down into facebook_profile */
                     JSONObject facebookInfo = json.getJSONObject(key);
+                    /* @hack - should externalize first and last name on server side outside of facebook profile */
                     setFirstName(facebookInfo.getString("first_name"));
                     setLastName(facebookInfo.getString("last_name"));
                     setFacebookId(facebookInfo.getString("id"));

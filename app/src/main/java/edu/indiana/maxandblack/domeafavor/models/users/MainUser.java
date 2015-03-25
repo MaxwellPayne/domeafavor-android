@@ -1,5 +1,7 @@
 package edu.indiana.maxandblack.domeafavor.models.users;
 
+import edu.indiana.maxandblack.domeafavor.models.Oid;
+
 import android.location.Location;
 import android.util.Log;
 
@@ -9,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +24,7 @@ public class MainUser extends User {
     private static final String TAG = "MainUser";
     private static MainUser ourInstance = new MainUser();
     private static OAuth2AccessToken token;
+    private static ArrayList<User> friends = new ArrayList<>();
 
     public static MainUser getInstance() {
         return ourInstance;
@@ -46,6 +50,10 @@ public class MainUser extends User {
         super.setLastName(lastName);
     }
 
+    public void setUsername(String uname) {
+        super.setUsername(uname);
+    }
+
     public void setFacebookId(String facebookId) {
         super.setFacebookId(facebookId);
     }
@@ -62,8 +70,26 @@ public class MainUser extends User {
         MainUser.token = token;
     }
 
+    public static ArrayList<User> getFriends() {
+        return friends;
+    }
+
     public void loadFromJson(JSONObject json) {
         super.loadFromJson(json);
+
+        /* download friends if exist */
+        if (json.has("friends")) {
+            friends.clear();
+            try {
+                JSONArray friendDataArray = json.getJSONArray("friends");
+                for (int i = 0; i < friendDataArray.length(); i++) {
+                    User friend = new User(friendDataArray.getJSONObject(i));
+                    friends.add(friend);
+                }
+            } catch (JSONException e) {
+                Log.d(TAG, e.toString());
+            }
+        }
     }
 
     public JSONObject getPOSTJson() {
@@ -75,9 +101,22 @@ public class MainUser extends User {
         if (facebookProfile != null) {
             jsonData.put("facebook_profile", facebookProfile.getInnerJSONObject());
         }
+
+        if (username != null) {
+            jsonData.put("username", username);
+        }
+
         if (token != null) {
             jsonData.put("token", token.toJson());
         }
+
+        /* friends should never be null */
+        ArrayList<String> friendIds = new ArrayList<>();
+        for (User friend : friends) {
+            friendIds.add(friend.get_id().toString());
+        }
+        jsonData.put("friends", friendIds);
+
         if (loc != null) {
             try {
                 JSONArray locArray = new JSONArray();
@@ -102,4 +141,6 @@ public class MainUser extends User {
 
         return new JSONObject(jsonData);
     }
+
+    //public void
 }

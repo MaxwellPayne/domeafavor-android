@@ -8,12 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.content.Intent;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
 import edu.indiana.maxandblack.domeafavor.R;
+import edu.indiana.maxandblack.domeafavor.activities.selectfriends.SelectFriendsActivity;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
 import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
 
@@ -30,6 +32,7 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
 
     private Button createOddjobSubmitFormButton;
     private Button createOddjobCancelButton;
+    private Button authorizeLackeysButton;
 
     private static Random generator = new Random();
 
@@ -58,9 +61,11 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
 
         createOddjobSubmitFormButton = (Button) v.findViewById(R.id.createOddjobSubmitFormButton);
         createOddjobCancelButton = (Button) v.findViewById(R.id.createOddjobCancelButton);
+        authorizeLackeysButton = (Button) v.findViewById(R.id.authorizeLackeysButton);
 
         createOddjobSubmitFormButton.setOnClickListener(this);
         createOddjobCancelButton.setOnClickListener(this);
+        authorizeLackeysButton.setOnClickListener(this);
 
         return v;
     }
@@ -89,6 +94,9 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
             submitOddjobForm();
         } else if (v == createOddjobCancelButton) {
             cancelOddjobCreation();
+        } else if (v == authorizeLackeysButton) {
+            Intent authorizeLackeysIntent = new Intent(getActivity(), SelectFriendsActivity.class);
+            getActivity().startActivity(authorizeLackeysIntent);
         }
     }
 
@@ -96,10 +104,11 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
         /* @hack - Randomly generating oddjob data here for debug purposes, UI not yet designed */
         newJob.setSolicitorId(MainUser.getInstance().get_id());
         newJob.setTitle(randString(250));
-        newJob.setTitle(randString(1000));
+        newJob.setDescription(randString(1000));
         Calendar expiryCalendar = Calendar.getInstance();
         expiryCalendar.setTime(new Date());
-        expiryCalendar.add(Calendar.HOUR_OF_DAY, generator.nextInt());
+        final int HOURS_IN_YEAR = 8766;
+        expiryCalendar.add(Calendar.HOUR_OF_DAY, generator.nextInt() % (HOURS_IN_YEAR * 2));
         newJob.setExpiry(expiryCalendar.getTime());
 
         final float maxCash = 200.0f, minCash = 0.0f;

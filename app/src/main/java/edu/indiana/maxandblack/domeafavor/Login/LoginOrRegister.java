@@ -142,8 +142,11 @@ public class LoginOrRegister extends Fragment implements OnClickListener {
             mListener.onFacebookLoginSuccess(this, session);
         } else if (state.isClosed()) {
             Log.i(TAG, "Logged out...");
-            /* @hack: this is called both on login failure AND intentional logout */
-            mListener.onFacebookLoginFailure(this, session, exception);
+            if (exception == null) {
+                mListener.onFacebookLogout(this, session);
+            } else {
+                mListener.onFacebookLoginFailure(this, session, exception);
+            }
         }
     }
 
@@ -161,6 +164,7 @@ public class LoginOrRegister extends Fragment implements OnClickListener {
         // TODO: Update argument type and name
         public void onFacebookLoginSuccess(LoginOrRegister loginFragment, Session session);
         public void onFacebookLoginFailure(LoginOrRegister loginFragment, Session session, Exception exception);
+        public void onFacebookLogout(LoginOrRegister loginFragment, Session session);
     }
 
 }

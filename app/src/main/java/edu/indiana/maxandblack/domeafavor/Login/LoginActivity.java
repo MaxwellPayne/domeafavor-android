@@ -6,9 +6,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 
+import com.facebook.HttpMethod;
+import com.facebook.RequestBatch;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.Request;
+import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
 
 import android.util.Log;
@@ -18,6 +21,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.indiana.maxandblack.domeafavor.MainMenuActivity;
@@ -27,6 +32,9 @@ import edu.indiana.maxandblack.domeafavor.andrest.RESTException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
 
@@ -35,6 +43,7 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
 
     public static final String TAG = "LoginActivity";
     private GraphUser fbUserData;
+    private ArrayList<String> friendFacebookIds;
     private static final HttpClient httpDomeafavorClient = new DefaultHttpClient();
     private static final AndrestClient andrestDomeafavorClient = new AndrestClient();
 
@@ -79,6 +88,9 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
     /* Conform to LoginOrRegister's interface */
     @Override
     public void onFacebookLoginSuccess(LoginOrRegister loginOrRegister, final Session session) {
+
+
+
         Request meRequest = Request.newMeRequest(session, new Request.GraphUserCallback() {
             @Override
             public void onCompleted(GraphUser graphUser, Response response) {
@@ -89,8 +101,28 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
                     MainUser.getInstance().setLastName(fbUserData.getLastName());
                     MainUser.getInstance().setFacebookProfile(fbUserData);
                     MainUser.getInstance().setToken(new OAuth2AccessToken(session));
+                    /* @hack - need to set custom username here */
+                    MainUser.getInstance().setUsername(fbUserData.getId() + "_" +
+                            fbUserData.getFirstName() + "_" + fbUserData.getLastName());
 
-                    new GetUserProfile().execute(fbUserData.getId());
+                    /* get user friends after ascertaining facebook id */
+                    String friendsGraphPath = String.format(getString(R.string.facebook_friends_endpoint), fbUserData.getId());
+                    Request.newMyFriendsRequest(session, new Request.GraphUserListCallback() {
+                        @Override
+                        public void onCompleted(List<GraphUser> graphUsers, Response response) {
+                            if (response.getError() != null) {
+                                /* @hack - unhandled facebook error */
+                                System.exit(1);
+                            }
+                            friendFacebookIds = new ArrayList<String>(graphUsers.size());
+                            /* grab facebook ids of all friends */
+                            for (GraphUser friend : graphUsers) {
+                                friendFacebookIds.add(friend.getId());
+                            }
+                            /* log into domeafavor server */
+                            new GetUserProfile().execute(fbUserData.getId());
+                        }
+                    }).executeAsync();
                 }
                 if (response.getError() != null) {
                     /* @hack - no error handling */
@@ -102,6 +134,11 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
 
     @Override
     public void onFacebookLoginFailure(LoginOrRegister loginOrRegister, Session session, Exception exception) {
+        /* @hack - unhandled facebook failure */
+    }
+
+    @Override
+    public void onFacebookLogout(LoginOrRegister loginFragment, Session session) {
 
     }
 
@@ -116,9 +153,19 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
             @Override
             protected RESTException doInBackground(Void... params) {
                 String createUserFbUrl = String.format(getString(R.string.dmfv_createuser_byfb) ,DMFV_API_ROOT);
+                JSONObject createUserResponse;
                 try {
-                    JSONObject createUserResponse =
-                            andrestDomeafavorClient.post(createUserFbUrl, MainUser.getInstance().getPOSTJson());
+                    /* create user, don't yet add friends */
+                    createUserResponse = andrestDomeafavorClient.post(createUserFbUrl, MainUser.getInstance().getPOSTJson());
+                    try {
+                        /* assign facebook friends who are already using the app */
+                        JSONObject facebookFriendJson = new JSONObject();
+                        facebookFriendJson.put("facebook_friends", new JSONArray(friendFacebookIds));
+                        /* @hack - not implemented on the server side */
+                        createUserResponse = andrestDomeafavorClient.put("/somePostFBFriendsEndpoint", facebookFriendJson);
+                    } catch (JSONException e) {
+                        Log.d(TAG, e.toString());
+                    }
                     /* unpack created user json into the MainUser */
                     MainUser.getInstance().loadFromJson(createUserResponse);
                     return null;
