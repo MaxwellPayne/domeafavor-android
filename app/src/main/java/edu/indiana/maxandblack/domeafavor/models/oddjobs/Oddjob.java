@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -71,6 +72,14 @@ public class Oddjob {
         return expiry;
     }
 
+    public String[] getAuthorizedLackeyIds() {
+        String[] authorizedLackeyIds = new String[authorizedLackeys.length];
+        for (int i = 0; i < authorizedLackeys.length; i++) {
+            authorizedLackeyIds[i] = authorizedLackeys[i].toString();
+        }
+        return authorizedLackeyIds;
+    }
+
     public void setSolicitorId(Oid solicitorId) {
         this.solicitorId = solicitorId;
     }
@@ -103,6 +112,8 @@ public class Oddjob {
         /* serialize location into mongodb's [lat, lon] format */
         final Double[] locArray = {keyLocation.getLatitude(), keyLocation.getLongitude()};
 
+
+
         HashMap<String, Object > jsonMap = new HashMap<String, Object>(){{
             put("solicitor", solicitorId.toString());
             put("title", title);
@@ -110,7 +121,7 @@ public class Oddjob {
             put("description", description);
             put("price", price);
             put("key_location", locArray);
-            put("authorized_lackeys", authorizedLackeys);
+            put("authorized_lackeys", getAuthorizedLackeyIds());
         }};
         try {
             Iterator<Map.Entry<String, Object>> jsonMapIterator = jsonMap.entrySet().iterator();

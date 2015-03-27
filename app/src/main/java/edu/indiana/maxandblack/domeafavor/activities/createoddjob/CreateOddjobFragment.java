@@ -95,8 +95,7 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
         } else if (v == createOddjobCancelButton) {
             cancelOddjobCreation();
         } else if (v == authorizeLackeysButton) {
-            Intent authorizeLackeysIntent = new Intent(getActivity(), SelectFriendsActivity.class);
-            getActivity().startActivity(authorizeLackeysIntent);
+            mListener.launchFriendPicker();
         }
     }
 
@@ -141,6 +140,7 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
     public interface CreateOddjobFragmentListener {
         public void onOddjobFormCompletion(Oddjob oddjob);
         public void onCreateOddjobCancel();
+        public void launchFriendPicker();
     }
 
 }

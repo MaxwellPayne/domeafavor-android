@@ -1,5 +1,6 @@
 package edu.indiana.maxandblack.domeafavor.activities.createoddjob;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import org.json.JSONObject;
 import org.lcsky.SVProgressHUD;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import edu.indiana.maxandblack.domeafavor.R;
@@ -18,12 +20,15 @@ import edu.indiana.maxandblack.domeafavor.activities.selectfriends.SelectFriends
 import edu.indiana.maxandblack.domeafavor.andrest.AndrestClient;
 import edu.indiana.maxandblack.domeafavor.andrest.RESTException;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
+import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
 import edu.indiana.maxandblack.domeafavor.models.users.User;
 import edu.indiana.maxandblack.domeafavor.models.Oid;
 
 
-public class CreateOddjobActivity extends ActionBarActivity implements CreateOddjobFragment.CreateOddjobFragmentListener,
-        SelectFriendsActivity.SelectFriendsActivityListener {
+public class CreateOddjobActivity extends ActionBarActivity implements CreateOddjobFragment.CreateOddjobFragmentListener {
+
+    /* request codes for sub-activities */
+    public static final int SELECT_FRIENDS_REQUEST = 23;
 
     private final AndrestClient domeafavorAndrestClient = new AndrestClient();
     private Boolean postInProgress = false;
@@ -56,6 +61,33 @@ public class CreateOddjobActivity extends ActionBarActivity implements CreateOdd
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SELECT_FRIENDS_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                /* retrieve the selected friend ids */
+                Bundle b = data.getExtras();
+                ArrayList<String> selectedFriendIds = data.getStringArrayListExtra(getString(R.string.intent_key_friend_ids));
+                authorizedLackeys.clear();
+                /* retrieve acutal user objects based on friend ids, authorize them */
+                for (String userId : selectedFriendIds) {
+                    authorizedLackeys.add(MainUser.getInstance().getFriend(userId));
+                }
+            }
+        }
+    }
+
+    public void launchFriendPicker() {
+        /* bundle the pre-authorized lackey ids */
+        ArrayList<String> authorizedLackeyIds = new ArrayList<>();
+        for (User friend : authorizedLackeys) {
+            authorizedLackeyIds.add(friend.get_id().toString());
+        }
+        Intent authorizeLackeysIntent = new Intent(this, SelectFriendsActivity.class);
+        authorizeLackeysIntent.putExtra(getString(R.string.intent_key_friend_ids), authorizedLackeyIds);
+        startActivityForResult(authorizeLackeysIntent, CreateOddjobActivity.SELECT_FRIENDS_REQUEST);
     }
 
     @Override
@@ -117,15 +149,5 @@ public class CreateOddjobActivity extends ActionBarActivity implements CreateOdd
     public void onCreateOddjobCancel() {
         /* abandon this activity */
         finish();
-    }
-
-    @Override
-    public void didSelectFriends(ArrayList<User> selectedFriends) {
-        authorizedLackeys = selectedFriends;
-    }
-
-    @Override
-    public void didCancelSelectingFriends() {
-        // pass
     }
 }

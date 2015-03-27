@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import edu.indiana.maxandblack.domeafavor.Login.OAuth2AccessToken;
@@ -24,7 +25,7 @@ public class MainUser extends User {
     private static final String TAG = "MainUser";
     private static MainUser ourInstance = new MainUser();
     private static OAuth2AccessToken token;
-    private static ArrayList<User> friends = new ArrayList<>();
+    private static HashMap<String, User> friends = new HashMap<>();
 
     public static MainUser getInstance() {
         return ourInstance;
@@ -70,8 +71,14 @@ public class MainUser extends User {
         MainUser.token = token;
     }
 
-    public static ArrayList<User> getFriends() {
-        return friends;
+    /* all friends extracted from the HashMap */
+    public ArrayList<User> getFriends() {
+        return new ArrayList<>(friends.values());
+    }
+
+    /* user with given _id */
+    public User getFriend(String userId) {
+        return friends.get(userId);
     }
 
     public void loadFromJson(JSONObject json) {
@@ -84,7 +91,7 @@ public class MainUser extends User {
                 JSONArray friendDataArray = json.getJSONArray("friends");
                 for (int i = 0; i < friendDataArray.length(); i++) {
                     User friend = new User(friendDataArray.getJSONObject(i));
-                    friends.add(friend);
+                    friends.put(friend.get_id().toString(), friend);
                 }
             } catch (JSONException e) {
                 Log.d(TAG, e.toString());
@@ -112,7 +119,7 @@ public class MainUser extends User {
 
         /* friends should never be null */
         ArrayList<String> friendIds = new ArrayList<>();
-        for (User friend : friends) {
+        for (User friend : getFriends()) {
             friendIds.add(friend.get_id().toString());
         }
         jsonData.put("friends", friendIds);

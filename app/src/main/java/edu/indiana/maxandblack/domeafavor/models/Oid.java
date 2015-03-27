@@ -25,4 +25,14 @@ public class Oid {
     public String toString() {
         return idString;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Oid && ((Oid) o).toString().equals(toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
 }

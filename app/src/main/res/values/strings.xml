@@ -42,4 +42,7 @@
     <string name="title_activity_select_friends">SelectFriendsActivity</string>
     <string name="select_friends_done_button">Done</string>
 
+    <!-- pragma region - Intent keys -->
+    <string name="intent_key_friend_ids">friend_ids</string>
+
 </resources>

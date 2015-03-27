@@ -95,6 +95,16 @@ public class User {
         this.facebookProfile = graphUser;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof User && ((User) o).get_id().equals(_id);
+    }
+
+    @Override
+    public int hashCode() {
+        return _id.hashCode();
+    }
+
     protected void loadFromJson(JSONObject json) {
         Iterator<String> properties = json.keys();
         while (properties.hasNext()) {
