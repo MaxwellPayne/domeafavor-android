@@ -22,6 +22,10 @@
     <string name="dmfv_getuser_byfb">%1$s/users/facebook/%2$s</string>
     <string name="dmfv_createuser_byfb">%1$s/users/facebook</string>
     <string name="dmfv_create_oddjob">/oddjobs</string>
+    <string name="dmfv_solicitor_jobs">%1$s/users/%2$s/oddjobs/delegated?lfinished=%3$s&amp;sfinished=%4$s</string>
+    <string name="dmfv_lackey_jobs">%1$s/oddjobs/delegatedto/%2$s?lfinished=%3$s&amp;sfinished=%4$s</string>
+
+
     <string name="oddjobFragmentDateCreated">Date Created:</string>
     <string name="title_activity_find_oddjob">FindOddjobActivity</string>
     <string name="fragment_oddjob_expiry_label">Expires:</string>
@@ -34,6 +38,14 @@
     <!-- pragma region - CreateOddjob -->
     <string name="create_oddjob_svprogress">Creating...</string>
 
+    <!-- pragma region - MonitorOddjobs -->
+    <string-array name="monitor_oddjobs_sections">
+        <item>In Progress</item>
+        <item>You marked as completed</item>
+        <item>They marked as completed</item>
+        <item>Completed!</item>
+    </string-array>
+
     <!-- pragma region - error messages -->
     <string name="general_server_error">Problem communicating with server</string>
 
@@ -44,5 +56,10 @@
 
     <!-- pragma region - Intent keys -->
     <string name="intent_key_friend_ids">friend_ids</string>
+
+    <!-- pragma region - Querystring Params -->
+    <string name="qstring_true">1</string>
+    <string name="qstring_false">0</string>
+    <string name="title_activity_monitor_oddjobs">MonitorOddjobsActivity</string>
 
 </resources>

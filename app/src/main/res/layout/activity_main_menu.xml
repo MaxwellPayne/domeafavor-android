@@ -39,6 +39,13 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Monitor Oddjobs"
+            android:onClick="onMonitorOddjobsButtonClick"
+            android:id="@+id/mainMenuActivityMonitorOddjobsButton" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Create Oddjob"
             android:id="@+id/mainMenuActivityCreateOddjobButton"
             android:onClick="onCreateOddjobButtonClick"

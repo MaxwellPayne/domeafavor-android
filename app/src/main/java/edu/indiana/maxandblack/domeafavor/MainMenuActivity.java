@@ -13,6 +13,7 @@ import edu.indiana.maxandblack.domeafavor.Login.LoginActivity;
 import edu.indiana.maxandblack.domeafavor.Login.LoginOrRegister;
 import edu.indiana.maxandblack.domeafavor.activities.createoddjob.CreateOddjobActivity;
 import edu.indiana.maxandblack.domeafavor.activities.findoddjob.FindOddjobActivity;
+import edu.indiana.maxandblack.domeafavor.activities.monitoroddjobs.MonitorOddjobsActivity;
 
 
 public class MainMenuActivity extends ActionBarActivity implements LoginOrRegister.OnLoginOrRegisterInteractionListener {
@@ -56,6 +57,12 @@ public class MainMenuActivity extends ActionBarActivity implements LoginOrRegist
         /* transition to the CreateOddjobActivity */
         Intent createOddjobsIntent = new Intent(this, CreateOddjobActivity.class);
         startActivity(createOddjobsIntent);
+    }
+
+    public void onMonitorOddjobsButtonClick(View v) {
+        /* transition to the MonitorOddjobsActivity */
+        Intent monitorOddjobsIntent = new Intent(this, MonitorOddjobsActivity.class);
+        startActivity(monitorOddjobsIntent);
     }
 
     @Override
