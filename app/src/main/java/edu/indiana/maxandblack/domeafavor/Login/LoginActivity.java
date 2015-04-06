@@ -149,6 +149,11 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
          * is now creating their profile. Do this async,
          * and upon success transition into the app
          */
+
+        // TODO: support username creation in RegisterFragment
+        MainUser u = MainUser.getInstance();
+        u.setUsername("Username:" + fbUserData.getId());
+
          AsyncTask<Void, Void, RESTException> registerTask =  new AsyncTask<Void, Void, RESTException>() {
             @Override
             protected RESTException doInBackground(Void... params) {
@@ -162,7 +167,7 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
                         JSONObject facebookFriendJson = new JSONObject();
                         facebookFriendJson.put("facebook_friends", new JSONArray(friendFacebookIds));
                         /* @hack - not implemented on the server side */
-                        createUserResponse = andrestDomeafavorClient.put("/somePostFBFriendsEndpoint", facebookFriendJson);
+                        //createUserResponse = andrestDomeafavorClient.put("/somePostFBFriendsEndpoint", facebookFriendJson);
                     } catch (JSONException e) {
                         Log.d(TAG, e.toString());
                     }

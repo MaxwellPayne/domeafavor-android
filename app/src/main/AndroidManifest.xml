@@ -51,6 +51,10 @@
             android:name=".activities.monitoroddjobs.MonitorOddjobsActivity"
             android:label="@string/title_activity_monitor_oddjobs" >
         </activity>
+        <activity
+            android:name=".activities.monitoroddjobs.EditOddjobActivity"
+            android:label="@string/title_activity_edit_oddjob" >
+        </activity>
     </application>
 
 </manifest>

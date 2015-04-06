@@ -39,12 +39,10 @@
     <string name="create_oddjob_svprogress">Creating...</string>
 
     <!-- pragma region - MonitorOddjobs -->
-    <string-array name="monitor_oddjobs_sections">
-        <item>In Progress</item>
-        <item>You marked as completed</item>
-        <item>They marked as completed</item>
-        <item>Completed!</item>
-    </string-array>
+    <string name="monitor_oddjob_section_inprogress">In Progress</string>
+    <string name="monitor_oddjob_section_solicitorcomplete">You marked as completed</string>
+    <string name="monitor_oddjob_section_lackeycomplete">They marked as completed</string>
+    <string name="monitor_oddjob_section_completed">Completed!</string>
 
     <!-- pragma region - error messages -->
     <string name="general_server_error">Problem communicating with server</string>
@@ -61,5 +59,6 @@
     <string name="qstring_true">1</string>
     <string name="qstring_false">0</string>
     <string name="title_activity_monitor_oddjobs">MonitorOddjobsActivity</string>
+    <string name="title_activity_edit_oddjob">EditOddjobActivity</string>
 
 </resources>

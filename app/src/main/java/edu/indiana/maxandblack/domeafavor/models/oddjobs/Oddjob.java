@@ -4,12 +4,15 @@ import edu.indiana.maxandblack.domeafavor.models.Oid;
 
 import android.graphics.Point;
 import android.location.Location;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -22,9 +25,12 @@ import java.util.Objects;
 /**
  * Created by Max on 3/1/15.
  */
-public class Oddjob {
+public class Oddjob implements Parcelable {
 
-    private final String TAG = "Oddjob";
+    /* key to be used in bundle when an Oddjob instance is the main instance in bundle */
+    public static final String MAIN_SERIALIZED_ODDJOB_KEY = "main_serialized_oddjob";
+
+    private static final String TAG = "Oddjob";
     protected Oid _id;
     protected Oid solicitorId;
     protected String title;
@@ -181,6 +187,65 @@ public class Oddjob {
             } catch (JSONException e) {
                 Log.d(TAG, e.toString());
             }
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Oddjob> CREATOR =
+            new Creator<Oddjob>() {
+                @Override
+                public Oddjob createFromParcel(Parcel source) {
+                    return new Oddjob(source);
+                }
+
+                @Override
+                public Oddjob[] newArray(int size) {
+                    return new Oddjob[size];
+                }
+            };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(_id.toString());
+        dest.writeString(solicitorId.toString());
+        dest.writeString(title);
+        dest.writeString(description);
+        dest.writeDouble(price);
+        dest.writeLong(expiry.getTime());
+        dest.writeDouble(keyLocation.getLatitude());
+        dest.writeDouble(keyLocation.getLongitude());
+
+        int authorizedLackeyCount = authorizedLackeys.length;
+        dest.writeInt(authorizedLackeyCount);
+        for (Oid authLackeyId : authorizedLackeys) {
+            dest.writeString(authLackeyId.toString());
+        }
+    }
+
+    private Oddjob(Parcel in) {
+        _id = new Oid(in.readString());
+        solicitorId = new Oid(in.readString());
+        title = in.readString();
+        description = in.readString();
+        price = in.readDouble();
+        expiry = new Date(in.readLong());
+
+        /* keyLocation */
+        double lat = in.readDouble();
+        double lon = in.readDouble();
+        keyLocation = new Location("");
+        keyLocation.setLatitude(lat);
+        keyLocation.setLongitude(lon);
+
+        /* authorizedLackeys */
+        int authorizedLackeyCount = in.readInt();
+        authorizedLackeys = new Oid[authorizedLackeyCount];
+        for (int i = 0; i < authorizedLackeyCount; i++) {
+            authorizedLackeys[i] = new Oid(in.readString());
         }
     }
 }

@@ -43,4 +43,9 @@ public class OAuth2AccessToken {
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s", tokenType, accessToken);
+    }
 }

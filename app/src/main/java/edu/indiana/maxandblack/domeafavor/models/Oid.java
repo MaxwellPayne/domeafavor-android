@@ -3,6 +3,8 @@ package edu.indiana.maxandblack.domeafavor.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * Created by Max on 3/24/15.
  */

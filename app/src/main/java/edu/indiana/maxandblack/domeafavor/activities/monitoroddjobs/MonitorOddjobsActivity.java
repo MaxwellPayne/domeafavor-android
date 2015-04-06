@@ -1,64 +1,107 @@
 package edu.indiana.maxandblack.domeafavor.activities.monitoroddjobs;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Pair;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.hb.views.PinnedSectionListView;
 
-import java.lang.reflect.Array;
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import edu.indiana.maxandblack.domeafavor.R;
+import edu.indiana.maxandblack.domeafavor.andrest.AndrestClient;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
+import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
 
-public class MonitorOddjobsActivity extends ActionBarActivity implements View.OnClickListener {
+public final class MonitorOddjobsActivity extends ActionBarActivity implements View.OnClickListener, PtrHandler {
 
-    private String[] sectionNames;
-    private ArrayList<Dummy> inProgressJobs = new ArrayList<>();
-    private ArrayList<Dummy> solicitorFinishedJobs = new ArrayList<>();
-    private ArrayList<Dummy> lackeyFinishedJobs = new ArrayList<>();
-    private ArrayList<Dummy> finishedJobs = new ArrayList<>();
+    private final String TAG = "MonitorOddjobsActivity";
 
-    private class Dummy {
+    private static final Semaphore canRequerySemaphore = new Semaphore(1);
+
+    PinnedSectionListView listView;
+    PtrFrameLayout pullRefreshView;
+
+    protected class OddjobSection {
+        private final String sectionName;
+        private final ArrayList<Oddjob> jobList;
+        private final String requeryEndpoint;
+
+        private OddjobSection() {
+            /* disable default constructor */
+            System.exit(1);
+            sectionName = null;
+            jobList = null;
+            requeryEndpoint = null;
+        }
+
+        OddjobSection(String name, String endpoint, ArrayList<Oddjob> list) {
+            sectionName = name;
+            jobList = list;
+            requeryEndpoint = endpoint;
+        }
+    }
+
+    protected OddjobSection[] oddjobSections = new OddjobSection[4];
+
+    /*private class Dummy {
         int name;
         Dummy(int x) {
             name = x;
         }
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_monitor_oddjobs);
 
-        sectionNames = getResources().getStringArray(R.array.monitor_oddjobs_sections);
+        final String userId = MainUser.getInstance().get_id().toString();
+        final String dmfvHost = getString(R.string.dmfv_host);
+        oddjobSections = new OddjobSection[] {
+            /* jobs still in progress */
+                new OddjobSection(getString(R.string.monitor_oddjob_section_inprogress),
+                        String.format(getString(R.string.dmfv_solicitor_jobs), dmfvHost, userId, "0", "0"),
+                        new ArrayList<Oddjob>()),
 
-        PinnedSectionListView listView = (PinnedSectionListView) findViewById(R.id.monitorOddjobsListView);
+            /* jobs where solicitor marked complete */
+                new OddjobSection(getString(R.string.monitor_oddjob_section_solicitorcomplete),
+                        String.format(getString(R.string.dmfv_solicitor_jobs), dmfvHost, userId, "0", "1"),
+                        new ArrayList<Oddjob>()),
+
+            /* jobs where lackey marked complete */
+                new OddjobSection(getString(R.string.monitor_oddjob_section_lackeycomplete),
+                        String.format(getString(R.string.dmfv_solicitor_jobs), dmfvHost, userId, "1", "0"),
+                        new ArrayList<Oddjob>()),
+
+            /* jobs where both parties say complete */
+                new OddjobSection(getString(R.string.monitor_oddjob_section_completed),
+                        String.format(getString(R.string.dmfv_solicitor_jobs), dmfvHost, userId, "1", "1"),
+                        new ArrayList<Oddjob>())
+        };
+
+        listView = (PinnedSectionListView) findViewById(R.id.monitorOddjobsListView);
         listView.setAdapter(new MonitorOddjobsListAdapter());
 
+        pullRefreshView = (PtrFrameLayout) findViewById(R.id.monitorOddjobsPullRefresh);
+        pullRefreshView.setPtrHandler(this);
 
-        for (int i=0; i< 3; i++) {
-            inProgressJobs.add(new Dummy(i));
-        }
-        for (int i=3; i<3; i++) {
-            solicitorFinishedJobs.add(new Dummy(i));
-        }
-        for (int i=3; i < 4; i++) {
-            lackeyFinishedJobs.add(new Dummy(i));
-        }
-
-        for (int i=4; i<27; i++) {
-            finishedJobs.add(new Dummy(i));
-        }
+        requeryAll.run();
     }
 
 
@@ -84,62 +127,57 @@ public class MonitorOddjobsActivity extends ActionBarActivity implements View.On
         return super.onOptionsItemSelected(item);
     }
 
+    // TODO: implement and test handling of following PtrHandler methods
+    @Override
+    public void onRefreshBegin(PtrFrameLayout ptrFrameLayout) {
+        try {
+            requeryAll.wait();
+        } catch (InterruptedException e) {
+
+        }
+
+    }
+
+    @Override
+    public boolean checkCanDoRefresh(PtrFrameLayout ptrFrameLayout, View view, View view2) {
+        if (canRequerySemaphore.tryAcquire()) {
+            canRequerySemaphore.release();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private boolean isHeader(int position) {
         Integer[] headerPositions = {null, null, null, null};
         int headerPosIdx = 0;
         int headerPos = 0;
 
-        ArrayList<Dummy>[] nonempties = getNonemptyLists();
-        for (ArrayList<Dummy> nonempty : nonempties) {
-            if (nonempty.size() > 0) {
-                headerPositions[headerPosIdx] = headerPos;
-                headerPosIdx++;
-                headerPos += nonempty.size() + 1;
-            }
+        OddjobSection[] nonemptySections = getNonemptySections();
+        for (OddjobSection section : nonemptySections) {
+            headerPositions[headerPosIdx] = headerPos;
+            headerPosIdx++;
+            headerPos += section.jobList.size() + 1;
         }
         return Arrays.asList(headerPositions).contains(position);
     }
 
-    private ArrayList<Dummy>[] getNonemptyLists() {
-        ArrayList<Dummy>[] jobLists = new ArrayList[] {
-                inProgressJobs,
-                solicitorFinishedJobs,
-                lackeyFinishedJobs,
-                finishedJobs
-        };
-        int nonemptyListCount = 0;
-        for (ArrayList<Dummy> jobList : jobLists) {
-            if (jobList.size() > 0) {
-                nonemptyListCount += 1;
+    private OddjobSection[] getNonemptySections() {
+        int nonemptySectionCount = 0;
+        for (OddjobSection section : oddjobSections) {
+            if (section.jobList.size() > 0) {
+                nonemptySectionCount += 1;
             }
         }
-        ArrayList<Dummy>[] retVal = new ArrayList[nonemptyListCount];
+        OddjobSection[] nonemptySections = new OddjobSection[nonemptySectionCount];
         int insertionCounter = 0;
-        for (ArrayList<Dummy> jobList : jobLists) {
-            if (jobList.size() > 0) {
-                retVal[insertionCounter] = jobList;
-                insertionCounter += 1;
+        for (OddjobSection section : oddjobSections) {
+            if (section.jobList.size() > 0) {
+                nonemptySections[insertionCounter] = section;
+                insertionCounter++;
             }
         }
-        return retVal;
-    }
-
-    ArrayList<String> getNonemptySectionNames() {
-        ArrayList<String> retVal = new ArrayList<>(sectionNames.length);
-        ArrayList<Dummy>[] allJobLists = new ArrayList[] {
-                inProgressJobs,
-                solicitorFinishedJobs,
-                lackeyFinishedJobs,
-                finishedJobs
-        };
-        int iterCounter = 0;
-        for (ArrayList<Dummy> jobList : allJobLists) {
-            if (jobList.size() > 0) {
-                retVal.add(sectionNames[iterCounter]);
-            }
-            iterCounter++;
-        }
-        return retVal;
+        return nonemptySections;
     }
 
     private class MonitorOddjobsListAdapter extends BaseAdapter
@@ -161,7 +199,7 @@ public class MonitorOddjobsActivity extends ActionBarActivity implements View.On
             if (viewType == VIEW_TYPE_HEADER) {
                 String headerName = (String) getItem(position);
 
-                if (convertView == null || convertView.getTag() instanceof Dummy) {
+                if (convertView == null || convertView.getTag() instanceof Oddjob) {
                     /* have to create new view */
                     v = getLayoutInflater().inflate(R.layout.monitor_oddjobs_list_header, parent, false);
                 }
@@ -170,13 +208,13 @@ public class MonitorOddjobsActivity extends ActionBarActivity implements View.On
             } else {
                 /* list item */
 
-                if (convertView == null || ! (convertView.getTag() instanceof Dummy)) {
+                if (convertView == null || ! (convertView.getTag() instanceof Oddjob)) {
                     /* have to create new view */
                     v = getLayoutInflater().inflate(R.layout.oddjob_list_item, parent, false);
                 }
 
-                Dummy listItem = (Dummy) getItem(position);
-                String viewText = Integer.toString(listItem.name);
+                Oddjob listItem = (Oddjob) getItem(position);
+                String viewText = listItem.get_id();
                 TextView oddjobListItemIdTextView = (TextView) v.findViewById(R.id.oddjobListitemIdTextView);
                 oddjobListItemIdTextView.setText(viewText);
 
@@ -194,24 +232,30 @@ public class MonitorOddjobsActivity extends ActionBarActivity implements View.On
 
         @Override
         public Object getItem(int position) {
-            /* list of all job lists */
-            ArrayList<Dummy>[] jobLists = getNonemptyLists();
-            ArrayList<String> nonemptySectionNames = getNonemptySectionNames();
+            OddjobSection[] nonemptySections = getNonemptySections();
+
+            ArrayList<Oddjob>[] jobLists = new ArrayList[nonemptySections.length];
+            String[] nonemptySectionNames = new String[nonemptySections.length];
+            /* populate jobLists and nonemptySectionNames from nonemptySections */
+            for (int i = 0; i < nonemptySections.length; i++) {
+                jobLists[i] = nonemptySections[i].jobList;
+                nonemptySectionNames[i] = nonemptySections[i].sectionName;
+            }
 
             if (isHeader(position)) {
                 int sectionNameIdx = 0;
-                for (ArrayList<Dummy> jobList : jobLists) {
+                for (ArrayList<Oddjob> jobList : jobLists) {
                     /* subtract out count of jobs for each type of job */
                     if ( (position-1) < jobList.size()) {
-                        return nonemptySectionNames.get(sectionNameIdx);
+                        return nonemptySectionNames[sectionNameIdx];
                     } else {
                         position -= (jobList.size() + 1);
                         sectionNameIdx++;
                     }
                 }
-                return nonemptySectionNames.get(sectionNameIdx);
+                return nonemptySectionNames[sectionNameIdx];
             } else {
-                for (ArrayList<Dummy> jobList : jobLists) {
+                for (ArrayList<Oddjob> jobList : jobLists) {
                     if ( (position-1) < jobList.size()) {
                         return jobList.get(position-1);
                     } else {
@@ -236,13 +280,15 @@ public class MonitorOddjobsActivity extends ActionBarActivity implements View.On
         @Override
         public int getCount() {
             /* count of all jobs + the four headers */
+            OddjobSection[] nonemptySections = getNonemptySections();
+
             int count = 0;
-            for (ArrayList<Dummy> nonemptyJobList : getNonemptyLists()) {
-                /* add all jobs to the count */
-                count += nonemptyJobList.size();
+            for (OddjobSection section : nonemptySections) {
+                /* increment by one for the section header */
+                count++;
+                /* increment count by number of jobs in this section */
+                count += section.jobList.size();
             }
-            /* add all sections to the count */
-            count += getNonemptySectionNames().size();
             return count;
         }
     }
@@ -251,13 +297,92 @@ public class MonitorOddjobsActivity extends ActionBarActivity implements View.On
     public void onClick(View v) {
         Object tag = v.getTag();
         if (tag != null) {
-            if (tag instanceof Dummy) {
-                Toast.makeText(this,
-                        Integer.toString(((Dummy) tag).name),
-                        Toast.LENGTH_LONG).show();
-
-
+            if (tag instanceof Oddjob) {
+                /* transition to edit this oddjob */
+                Oddjob selectedJob = (Oddjob) tag;
+                Intent editOddjobIntent = new Intent(this, EditOddjobActivity.class);
+                /* pass the selected job to the next activity */
+                editOddjobIntent.putExtra(Oddjob.MAIN_SERIALIZED_ODDJOB_KEY, selectedJob);
+                startActivity(editOddjobIntent);
             }
         }
     }
+
+    private Runnable requeryAll = new Runnable() {
+        private CountDownLatch requeryCountdown = new CountDownLatch(oddjobSections.length);
+        private final AndrestClient domeafavorClient = new AndrestClient();
+
+        @Override
+        public void run() {
+            /* only execute if no other requery is in progress */
+            if (canRequerySemaphore.tryAcquire()) {
+
+                /* dispatch all sections on their own RequeryOne */
+                for (OddjobSection section : oddjobSections) {
+                    RequeryOne r = new RequeryOne(section);
+                    new Thread(r).start();
+                }
+                try {
+                    /* wait for all RequeryOnes to finish */
+                    boolean didSucceed =
+                            requeryCountdown.await(getResources().getInteger(R.integer.requery_timeout), TimeUnit.SECONDS);
+                    if (didSucceed) {
+                        /* update the GUI upon success */
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                MonitorOddjobsListAdapter listAdapter = (MonitorOddjobsListAdapter) listView.getAdapter();
+                                listAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+
+                } catch (InterruptedException e) {
+                    // TODO: handle interrupted exception because I don't know what that does
+                } finally {
+                    /* release the semaphore no matter what happened */
+                    canRequerySemaphore.release();
+                }
+            }
+        }
+
+        /**
+         * Requeries a single OddJobSection
+         */
+        class RequeryOne implements Runnable {
+            private final OddjobSection section;
+
+            public RequeryOne(OddjobSection sec) {
+                section = sec;
+            }
+
+            @Override
+            public void run() {
+                Log.d(TAG, "Running a RequeryOne");
+                try {
+                    Log.d(TAG, String.format("Contacting host %s", section.requeryEndpoint));
+                    /* get the new oddjobs, store them */
+                    JSONArray newJobsJson =
+                            domeafavorClient.getArray(section.requeryEndpoint);
+                    ArrayList<Oddjob> newJobs = new ArrayList<>(newJobsJson.length());
+                    for (int i = 0; i < newJobsJson.length(); i++) {
+                        Oddjob job = new Oddjob(newJobsJson.getJSONObject(i));
+                        newJobs.add(job);
+                    }
+                    /* notify the countdown of success on this thread */
+                    requeryCountdown.countDown();
+                    /* wait for all other RequeryOnes to finish */
+                    boolean didSucceed =
+                            requeryCountdown.await(getResources().getInteger(R.integer.requery_timeout), TimeUnit.SECONDS);
+                    if (didSucceed) {
+                        /* only refresh the data source if ALL oddjobs succeeded */
+                        section.jobList.clear();
+                        section.jobList.addAll(newJobs);
+                    }
+                } catch (Exception e) {
+                    Log.d(TAG, e.toString());
+                }
+            }
+        }
+    };
 }

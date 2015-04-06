@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.facebook.model.GraphUser;
 
+import org.apache.http.HttpRequest;
+import org.apache.http.client.methods.HttpGet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -149,5 +151,8 @@ public class MainUser extends User {
         return new JSONObject(jsonData);
     }
 
-    //public void
+    public void applyAuthorizationHeader(HttpRequest req) {
+        // TODO: handle authorization for username:password situations
+        req.addHeader("Authorization", this.getToken().toString());
+    }
 }

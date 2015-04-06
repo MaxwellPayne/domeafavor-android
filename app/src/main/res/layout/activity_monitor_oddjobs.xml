@@ -7,11 +7,21 @@
     tools:context="edu.indiana.maxandblack.domeafavor.activities.monitoroddjobs.MonitorOddjobsActivity">
 
 
-    <com.hb.views.PinnedSectionListView
+    <in.srain.cube.views.ptr.PtrFrameLayout
+        android:id="@+id/monitorOddjobsPullRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/monitorOddjobsListView"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentStart="true" />
+        >
+
+        <com.hb.views.PinnedSectionListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/monitorOddjobsListView"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentStart="true" />
+
+    </in.srain.cube.views.ptr.PtrFrameLayout>
+
+
 </RelativeLayout>
