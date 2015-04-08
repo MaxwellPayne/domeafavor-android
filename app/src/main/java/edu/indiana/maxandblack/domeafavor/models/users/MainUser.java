@@ -1,21 +1,17 @@
 package edu.indiana.maxandblack.domeafavor.models.users;
 
-import edu.indiana.maxandblack.domeafavor.models.Oid;
-
 import android.location.Location;
 import android.util.Log;
 
 import com.facebook.model.GraphUser;
 
 import org.apache.http.HttpRequest;
-import org.apache.http.client.methods.HttpGet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import edu.indiana.maxandblack.domeafavor.Login.OAuth2AccessToken;
@@ -83,6 +79,7 @@ public class MainUser extends User {
         return friends.get(userId);
     }
 
+    @Override
     public void loadFromJson(JSONObject json) {
         super.loadFromJson(json);
 
@@ -101,6 +98,7 @@ public class MainUser extends User {
         }
     }
 
+    @Override
     public JSONObject getPOSTJson() {
         Map<String, Object> jsonData = new HashMap<String, Object>();
         if (_id != null) { jsonData.put("_id", _id); }

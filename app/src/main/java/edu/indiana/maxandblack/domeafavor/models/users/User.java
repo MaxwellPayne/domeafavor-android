@@ -1,6 +1,7 @@
 package edu.indiana.maxandblack.domeafavor.models.users;
 
-import edu.indiana.maxandblack.domeafavor.models.Oid;
+import edu.indiana.maxandblack.domeafavor.models.datatypes.Oid;
+import edu.indiana.maxandblack.domeafavor.models.ServerEntity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,16 +12,14 @@ import android.util.Log;
 
 import com.facebook.model.GraphUser;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
  * Created by Max on 2/19/15.
  */
-public class User {
+public class User extends ServerEntity {
 
     private static final String TAG = "User";
-    protected Oid _id;
     protected String firstName;
     protected String lastName;
     protected String username;
@@ -105,39 +104,51 @@ public class User {
         return _id.hashCode();
     }
 
+    @Override
     protected void loadFromJson(JSONObject json) {
         Iterator<String> properties = json.keys();
         while (properties.hasNext()) {
             String key = properties.next();
             try {
-                if (key.equals("_id")) {
+                switch (key) {
+                    case "_id":
                     /* drill down to get mongodb _id */
-                    JSONObject oId = json.getJSONObject(key);
-                    set_id((String) oId.get("$oid"));
-                } else if (key.equals("username")) {
-                    username = json.getString(key);
-                } else if (key.equals("first_name")) {
-                    setFirstName(json.getString(key));
-                } else if (key.equals("last_name")) {
-                    setLastName(json.getString(key));
-                }
-                else if (key.equals("facebook_profile")) {
+                        JSONObject oId = json.getJSONObject(key);
+                        set_id((String) oId.get("$oid"));
+                        break;
+                    case "username":
+                        username = json.getString(key);
+                        break;
+                    case "first_name":
+                        setFirstName(json.getString(key));
+                        break;
+                    case "last_name":
+                        setLastName(json.getString(key));
+                        break;
+                    case "facebook_profile":
                     /* drill down into facebook_profile */
-                    JSONObject facebookInfo = json.getJSONObject(key);
+                        JSONObject facebookInfo = json.getJSONObject(key);
                     /* @hack - should externalize first and last name on server side outside of facebook profile */
-                    setFirstName(facebookInfo.getString("first_name"));
-                    setLastName(facebookInfo.getString("last_name"));
-                    setFacebookId(facebookInfo.getString("id"));
-                } else if (key.equals("loc")) {
-                    JSONArray locArray = json.getJSONArray(key);
-                    Location location = new Location("");
-                    location.setLatitude(locArray.getDouble(0));
-                    location.setLatitude(locArray.getDouble(1));
-                    setLoc(location);
+                        setFirstName(facebookInfo.getString("first_name"));
+                        setLastName(facebookInfo.getString("last_name"));
+                        setFacebookId(facebookInfo.getString("id"));
+                        break;
+                    case "loc":
+                        JSONArray locArray = json.getJSONArray(key);
+                        Location location = new Location("");
+                        location.setLatitude(locArray.getDouble(0));
+                        location.setLatitude(locArray.getDouble(1));
+                        setLoc(location);
+                        break;
                 }
             } catch (JSONException e) {
                 Log.d(TAG, e.toString());
             }
         }
+    }
+
+    @Override
+    public JSONObject getPOSTJson() {
+        throw new UnsupportedOperationException("Not implemented for User other than MainUser");
     }
 }

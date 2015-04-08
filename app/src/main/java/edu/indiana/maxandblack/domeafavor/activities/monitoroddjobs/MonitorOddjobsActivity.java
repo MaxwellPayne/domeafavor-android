@@ -17,6 +17,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -33,65 +34,65 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
     private final String TAG = "MonitorOddjobsActivity";
 
     private static final Semaphore canRequerySemaphore = new Semaphore(1);
+    private static final AndrestClient domeafavorClient = new AndrestClient();
 
     PinnedSectionListView listView;
     PtrFrameLayout pullRefreshView;
 
+
     protected class OddjobSection {
         private final String sectionName;
         private final ArrayList<Oddjob> jobList;
-        private final String requeryEndpoint;
+        private final Oddjob.CompletionState completionState;
 
         private OddjobSection() {
             /* disable default constructor */
             System.exit(1);
             sectionName = null;
             jobList = null;
-            requeryEndpoint = null;
+            completionState = null;
         }
 
-        OddjobSection(String name, String endpoint, ArrayList<Oddjob> list) {
+        OddjobSection(String name, Oddjob.CompletionState completion, ArrayList<Oddjob> list) {
             sectionName = name;
             jobList = list;
-            requeryEndpoint = endpoint;
+            completionState = completion;
         }
     }
 
-    protected OddjobSection[] oddjobSections = new OddjobSection[4];
+    final int NUMBER_OF_SECTIONS = 5;
+    protected OddjobSection[] oddjobSections = new OddjobSection[NUMBER_OF_SECTIONS];
 
-    /*private class Dummy {
-        int name;
-        Dummy(int x) {
-            name = x;
-        }
-    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_monitor_oddjobs);
 
-        final String userId = MainUser.getInstance().get_id().toString();
-        final String dmfvHost = getString(R.string.dmfv_host);
         oddjobSections = new OddjobSection[] {
             /* jobs still in progress */
                 new OddjobSection(getString(R.string.monitor_oddjob_section_inprogress),
-                        String.format(getString(R.string.dmfv_solicitor_jobs), dmfvHost, userId, "0", "0"),
-                        new ArrayList<Oddjob>()),
-
-            /* jobs where solicitor marked complete */
-                new OddjobSection(getString(R.string.monitor_oddjob_section_solicitorcomplete),
-                        String.format(getString(R.string.dmfv_solicitor_jobs), dmfvHost, userId, "0", "1"),
+                        Oddjob.CompletionState.IN_PROGRESS,
                         new ArrayList<Oddjob>()),
 
             /* jobs where lackey marked complete */
-                new OddjobSection(getString(R.string.monitor_oddjob_section_lackeycomplete),
-                        String.format(getString(R.string.dmfv_solicitor_jobs), dmfvHost, userId, "1", "0"),
+                new OddjobSection(getString(R.string.monitor_oddjob_section_pendingpayment),
+                        Oddjob.CompletionState.PENDING_PAYMENT,
                         new ArrayList<Oddjob>()),
 
-            /* jobs where both parties say complete */
+            /* jobs that were completed and paid */
                 new OddjobSection(getString(R.string.monitor_oddjob_section_completed),
-                        String.format(getString(R.string.dmfv_solicitor_jobs), dmfvHost, userId, "1", "1"),
+                        Oddjob.CompletionState.COMPLETED,
+                        new ArrayList<Oddjob>()),
+
+            /* jobs where lackey marked complete */
+                new OddjobSection(getString(R.string.monitor_oddjob_section_paymentdenied),
+                        Oddjob.CompletionState.PAYMENT_DENIED,
+                        new ArrayList<Oddjob>()),
+
+            /* jobs where neither party considered it complete */
+                new OddjobSection(getString(R.string.monitor_oddjob_section_expired),
+                        Oddjob.CompletionState.EXPIRED,
                         new ArrayList<Oddjob>())
         };
 
@@ -101,7 +102,7 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
         pullRefreshView = (PtrFrameLayout) findViewById(R.id.monitorOddjobsPullRefresh);
         pullRefreshView.setPtrHandler(this);
 
-        requeryAll.run();
+        new RequeryAllTask().start();
     }
 
 
@@ -130,11 +131,8 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
     // TODO: implement and test handling of following PtrHandler methods
     @Override
     public void onRefreshBegin(PtrFrameLayout ptrFrameLayout) {
-        try {
-            requeryAll.wait();
-        } catch (InterruptedException e) {
-
-        }
+        RequeryAllTask requeryTask = new RequeryAllTask();
+        requeryTask.start();
 
     }
 
@@ -149,7 +147,7 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
     }
 
     private boolean isHeader(int position) {
-        Integer[] headerPositions = {null, null, null, null};
+        Integer[] headerPositions = new Integer[NUMBER_OF_SECTIONS];
         int headerPosIdx = 0;
         int headerPos = 0;
 
@@ -308,26 +306,79 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
         }
     }
 
-    private Runnable requeryAll = new Runnable() {
+    private class RequeryAllTask extends Thread {
+        @Override
+        public void run() {
+            if (canRequerySemaphore.tryAcquire()) {
+                try {
+                    String endpoint = getString(R.string.dmfv_delegated_byme,
+                            getString(R.string.dmfv_host),
+                            MainUser.getInstance().get_id().toString());
+                    JSONArray jobsJson = domeafavorClient.getArray(endpoint);
+                    final ArrayList<Oddjob> newJobs = new ArrayList<>(jobsJson.length());
+                    /* coerce json to jobs, store in an array for later use on GUI thread */
+                    for (int i = 0; i < jobsJson.length(); i++) {
+                        Oddjob job = new Oddjob(jobsJson.getJSONObject(i));
+                        newJobs.add(job);
+                    }
+                    /* only update data source arrays on GUI thread */
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (OddjobSection section : oddjobSections) {
+                                /* clear out all sections */
+                                section.jobList.clear();
+                            }
+                            HashMap<Oddjob.CompletionState, ArrayList<Oddjob>> sectionMapping =
+                                    new HashMap<>(NUMBER_OF_SECTIONS);
+                            /* map each section using .completionState as the key */
+                            for (OddjobSection section : oddjobSections) {
+                                sectionMapping.put(section.completionState, section.jobList);
+                            }
+                            for (Oddjob job : newJobs) {
+                                /* put each job in the array for section that matches its state */
+                               ArrayList<Oddjob> correspondingArray = sectionMapping.get(job.getCompletionState());
+                                correspondingArray.add(job);
+                            }
+                            /* update the GUI with new data */
+                            MonitorOddjobsListAdapter listAdapter = (MonitorOddjobsListAdapter) listView.getAdapter();
+                            listAdapter.notifyDataSetChanged();
+                        }
+                    });
+                } catch (Exception e) {
+                    // TODO: handle failed requery
+                }
+
+                /* always release the semaphore, regardless of what happened */
+                canRequerySemaphore.release();
+            }
+        }
+    }
+
+    /**
+     * Deprecated code; good example of one asynchronous task
+     * managing/waiting on multithreaded sub-tasks
+     */
+    /*private Runnable requeryAll = new Runnable() {
         private CountDownLatch requeryCountdown = new CountDownLatch(oddjobSections.length);
         private final AndrestClient domeafavorClient = new AndrestClient();
 
         @Override
         public void run() {
-            /* only execute if no other requery is in progress */
+            /* only execute if no other requery is in progress *
             if (canRequerySemaphore.tryAcquire()) {
 
-                /* dispatch all sections on their own RequeryOne */
+                /* dispatch all sections on their own RequeryOne *
                 for (OddjobSection section : oddjobSections) {
                     RequeryOne r = new RequeryOne(section);
                     new Thread(r).start();
                 }
                 try {
-                    /* wait for all RequeryOnes to finish */
+                    /* wait for all RequeryOnes to finish *
                     boolean didSucceed =
                             requeryCountdown.await(getResources().getInteger(R.integer.requery_timeout), TimeUnit.SECONDS);
                     if (didSucceed) {
-                        /* update the GUI upon success */
+                        /* update the GUI upon success *
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -340,7 +391,7 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
                 } catch (InterruptedException e) {
                     // TODO: handle interrupted exception because I don't know what that does
                 } finally {
-                    /* release the semaphore no matter what happened */
+                    /* release the semaphore no matter what happened *
                     canRequerySemaphore.release();
                 }
             }
@@ -348,7 +399,7 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
 
         /**
          * Requeries a single OddJobSection
-         */
+         *
         class RequeryOne implements Runnable {
             private final OddjobSection section;
 
@@ -361,7 +412,7 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
                 Log.d(TAG, "Running a RequeryOne");
                 try {
                     Log.d(TAG, String.format("Contacting host %s", section.requeryEndpoint));
-                    /* get the new oddjobs, store them */
+                    /* get the new oddjobs, store them *
                     JSONArray newJobsJson =
                             domeafavorClient.getArray(section.requeryEndpoint);
                     ArrayList<Oddjob> newJobs = new ArrayList<>(newJobsJson.length());
@@ -369,13 +420,13 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
                         Oddjob job = new Oddjob(newJobsJson.getJSONObject(i));
                         newJobs.add(job);
                     }
-                    /* notify the countdown of success on this thread */
+                    /* notify the countdown of success on this thread *
                     requeryCountdown.countDown();
-                    /* wait for all other RequeryOnes to finish */
+                    /* wait for all other RequeryOnes to finish *
                     boolean didSucceed =
                             requeryCountdown.await(getResources().getInteger(R.integer.requery_timeout), TimeUnit.SECONDS);
                     if (didSucceed) {
-                        /* only refresh the data source if ALL oddjobs succeeded */
+                        /* only refresh the data source if ALL oddjobs succeeded *
                         section.jobList.clear();
                         section.jobList.addAll(newJobs);
                     }
@@ -384,5 +435,5 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
                 }
             }
         }
-    };
+    };*/
 }

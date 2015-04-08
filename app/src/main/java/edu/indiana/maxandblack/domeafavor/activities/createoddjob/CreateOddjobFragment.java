@@ -16,6 +16,7 @@ import java.util.Random;
 
 import edu.indiana.maxandblack.domeafavor.R;
 import edu.indiana.maxandblack.domeafavor.activities.selectfriends.SelectFriendsActivity;
+import edu.indiana.maxandblack.domeafavor.models.datatypes.MongoDate;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
 import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
 
@@ -108,7 +109,7 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
         expiryCalendar.setTime(new Date());
         final int HOURS_IN_YEAR = 8766;
         expiryCalendar.add(Calendar.HOUR_OF_DAY, generator.nextInt() % (HOURS_IN_YEAR * 2));
-        newJob.setExpiry(expiryCalendar.getTime());
+        newJob.setExpiry(new MongoDate(expiryCalendar.getTime()));
 
         final float maxCash = 200.0f, minCash = 0.0f;
         newJob.setPrice(Math.random() * (maxCash - minCash) + minCash);

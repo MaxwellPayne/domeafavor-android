@@ -12,7 +12,6 @@ import android.widget.Toast;
 import org.json.JSONObject;
 import org.lcsky.SVProgressHUD;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import edu.indiana.maxandblack.domeafavor.R;
@@ -22,7 +21,7 @@ import edu.indiana.maxandblack.domeafavor.andrest.RESTException;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
 import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
 import edu.indiana.maxandblack.domeafavor.models.users.User;
-import edu.indiana.maxandblack.domeafavor.models.Oid;
+import edu.indiana.maxandblack.domeafavor.models.datatypes.Oid;
 
 
 public class CreateOddjobActivity extends ActionBarActivity implements CreateOddjobFragment.CreateOddjobFragmentListener {

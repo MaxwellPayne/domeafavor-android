@@ -22,8 +22,10 @@
     <string name="dmfv_getuser_byfb">%1$s/users/facebook/%2$s</string>
     <string name="dmfv_createuser_byfb">%1$s/users/facebook</string>
     <string name="dmfv_create_oddjob">/oddjobs</string>
-    <string name="dmfv_solicitor_jobs">%1$s/users/%2$s/oddjobs/delegated?lfinished=%3$s&amp;sfinished=%4$s</string>
-    <string name="dmfv_lackey_jobs">%1$s/oddjobs/delegatedto/%2$s?lfinished=%3$s&amp;sfinished=%4$s</string>
+    <string name="dmfv_delegated_byme">%1$s/users/%2$s/oddjobs/delegated</string>
+    <string name="dmfv_delegated_tome">$1$s/users/%2$s/oddjobs/delegatedto</string>
+    <string name="dmfv_solicitor_jobs_bycompletion">%1$s/users/%2$s/oddjobs/delegated?lfinished=%3$s&amp;sfinished=%4$s</string>
+    <string name="dmfv_lackey_jobs_bycompletion">%1$s/oddjobs/delegatedto/%2$s?lfinished=%3$s&amp;sfinished=%4$s</string>
 
 
     <string name="oddjobFragmentDateCreated">Date Created:</string>
@@ -40,9 +42,10 @@
 
     <!-- pragma region - MonitorOddjobs -->
     <string name="monitor_oddjob_section_inprogress">In Progress</string>
-    <string name="monitor_oddjob_section_solicitorcomplete">You marked as completed</string>
-    <string name="monitor_oddjob_section_lackeycomplete">They marked as completed</string>
-    <string name="monitor_oddjob_section_completed">Completed!</string>
+    <string name="monitor_oddjob_section_pendingpayment">Awaiting Payment</string>
+    <string name="monitor_oddjob_section_completed">Completed</string>
+    <string name="monitor_oddjob_section_paymentdenied">Payment Denied</string>
+    <string name="monitor_oddjob_section_expired">Expired</string>
 
     <!-- pragma region - error messages -->
     <string name="general_server_error">Problem communicating with server</string>
