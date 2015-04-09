@@ -47,6 +47,10 @@
             android:name=".activities.selectfriends.SelectFriendsActivity"
             android:label="@string/title_activity_select_friends" >
         </activity>
+        <activity
+            android:name=".activities.register.Register"
+            android:label="@string/title_activity_register" >
+        </activity>
     </application>
 
 </manifest>

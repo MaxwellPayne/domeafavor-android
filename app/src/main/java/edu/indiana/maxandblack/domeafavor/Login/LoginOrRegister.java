@@ -17,6 +17,8 @@ import com.facebook.widget.LoginButton;
 import android.view.View.OnClickListener;
 import android.util.Log;
 
+
+import edu.indiana.maxandblack.domeafavor.activities.register.*;
 import edu.indiana.maxandblack.domeafavor.R;
 
 /**
@@ -126,6 +128,8 @@ public class LoginOrRegister extends Fragment implements OnClickListener {
 
     @Override
     public void onClick(View v) {
+        Intent intent = new Intent(LoginOrRegister.this.getActivity(), Register.class);
+        startActivity(intent);
 
     }
 

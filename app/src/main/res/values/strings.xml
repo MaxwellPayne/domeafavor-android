@@ -41,5 +41,13 @@
     <string name="server_success">Success!</string>
     <string name="title_activity_select_friends">SelectFriendsActivity</string>
     <string name="select_friends_done_button">Done</string>
+    <string name="RegisterTitle">Register</string>
+    <string name="FirstNameHint">First Name</string>
+    <string name="LastNameHint">Last Name</string>
+    <string name="EmailHint">Email</string>
+    <string name="BirthdayHint">Date of Birth "mm/dd/yyyy"</string>
+    <string name="LocationCheckBox">Location Services?</string>
+    <string name="SubmitText">Submit</string>
+    <string name="title_activity_register">Register</string>
 
 </resources>
