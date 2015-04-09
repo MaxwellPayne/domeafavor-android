@@ -106,7 +106,6 @@ public class Register extends ActionBarActivity {
 
 
             }
-
         }
     };
 
