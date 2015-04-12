@@ -72,7 +72,7 @@ public class CreateOddjobActivity extends ActionBarActivity implements CreateOdd
                 authorizedLackeys.clear();
                 /* retrieve acutal user objects based on friend ids, authorize them */
                 for (String userId : selectedFriendIds) {
-                    authorizedLackeys.add(MainUser.getInstance().getFriend(userId));
+                    authorizedLackeys.add(MainUser.getInstance().getFriend(new Oid(userId)));
                 }
             }
         }

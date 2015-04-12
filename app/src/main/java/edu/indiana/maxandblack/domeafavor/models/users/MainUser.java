@@ -1,5 +1,6 @@
 package edu.indiana.maxandblack.domeafavor.models.users;
 
+import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
@@ -15,15 +16,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.indiana.maxandblack.domeafavor.Login.OAuth2AccessToken;
+import edu.indiana.maxandblack.domeafavor.R;
+import edu.indiana.maxandblack.domeafavor.andrest.AndrestClient;
+import edu.indiana.maxandblack.domeafavor.models.datatypes.Oid;
 
 /**
  * Created by Max on 2/20/15.
  */
 public class MainUser extends User {
     private static final String TAG = "MainUser";
+    private static final AndrestClient domeafavorClient = new AndrestClient();
     private static MainUser ourInstance = new MainUser();
-    private static OAuth2AccessToken token;
-    private static HashMap<String, User> friends = new HashMap<>();
+    private OAuth2AccessToken token;
+    private HashMap<Oid, User> friends = new HashMap<>();
 
     public static MainUser getInstance() {
         return ourInstance;
@@ -33,7 +38,7 @@ public class MainUser extends User {
         super(null);
     }
 
-    public static OAuth2AccessToken getToken() {
+    public OAuth2AccessToken getToken() {
         return token;
     }
 
@@ -65,8 +70,59 @@ public class MainUser extends User {
         super.setFacebookProfile(graphUser);
     }
 
-    public static void setToken(OAuth2AccessToken token) {
-        MainUser.token = token;
+    public void setToken(OAuth2AccessToken t) {
+        token = t;
+    }
+
+    public boolean addFriend(User friend, Context context) {
+        /* only add if not already a friend */
+        if (!friends.containsKey(friend.get_id())) {
+            try {
+                String endpoint = context.getString(R.string.dmfv_modify_friend_byoid,
+                        context.getString(R.string.dmfv_host),
+                        get_id().toString());
+                JSONArray added = new JSONArray();
+                added.put(friend.get_id().toString());
+                JSONObject putJson = new JSONObject();
+                putJson.put("add", added);
+                /* comes back as new user object */
+                JSONObject updatedUserJson = domeafavorClient.put(endpoint, putJson);
+                /* update by unpacking the updated user */
+                loadFromJson(updatedUserJson);
+                /* return true for success */
+                return true;
+            } catch (Exception e) {
+                /* failed to PUT new friend */
+                return false;
+            }
+        } else {
+            /* already a friend, just say things worked */
+            return true;
+        }
+    }
+
+    public boolean removeFriend(User friend, Context context) {
+        /* only remove if already a friend */
+        if (friends.containsKey(friend.get_id())) {
+            try {
+                String endpoint = context.getString(R.string.dmfv_modify_friend_byoid,
+                        context.getString(R.string.dmfv_host),
+                        get_id().toString());
+                JSONArray removed = new JSONArray();
+                removed.put(friend.get_id().toString());
+                JSONObject putJson = new JSONObject();
+                putJson.put("remove", removed);
+                JSONObject updatedUserJson = domeafavorClient.put(endpoint, putJson);
+                loadFromJson(updatedUserJson);
+                return true;
+            } catch (Exception e) {
+                /* failed to PUT remove friend */
+                return false;
+            }
+        } else {
+            /* already "removed" just say things worked */
+            return true;
+        }
     }
 
     /* all friends extracted from the HashMap */
@@ -75,7 +131,7 @@ public class MainUser extends User {
     }
 
     /* user with given _id */
-    public User getFriend(String userId) {
+    public User getFriend(Oid userId) {
         return friends.get(userId);
     }
 
@@ -90,7 +146,7 @@ public class MainUser extends User {
                 JSONArray friendDataArray = json.getJSONArray("friends");
                 for (int i = 0; i < friendDataArray.length(); i++) {
                     User friend = new User(friendDataArray.getJSONObject(i));
-                    friends.put(friend.get_id().toString(), friend);
+                    friends.put(friend.get_id(), friend);
                 }
             } catch (JSONException e) {
                 Log.d(TAG, e.toString());

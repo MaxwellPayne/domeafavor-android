@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -39,7 +40,7 @@ public class OddjobListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        oddjobs = new ArrayList<Oddjob>();
+        oddjobs = new ArrayList<>();
         setListAdapter(new OddjobsAdapter(getActivity(), oddjobs));
     }
 
@@ -75,10 +76,15 @@ public class OddjobListFragment extends ListFragment {
 
     public void setOddjobs(ArrayList<Oddjob> oddjobsList) {
         /* change the data set and notify the adapter */
-        oddjobs.clear();
-        oddjobs.addAll(oddjobsList);
-        OddjobsAdapter adapter = (OddjobsAdapter) getListAdapter();
-        adapter.notifyDataSetChanged();
+        if (oddjobsList.size() == 0) {
+            Toast.makeText(getActivity(), getString(R.string.errmsg_no_jobs_nearyou), Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            oddjobs.clear();
+            oddjobs.addAll(oddjobsList);
+            OddjobsAdapter adapter = (OddjobsAdapter) getListAdapter();
+            adapter.notifyDataSetChanged();
+        }
     }
 
     /**

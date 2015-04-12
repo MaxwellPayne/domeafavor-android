@@ -2,4 +2,6 @@
     
 <resources>
     <integer name="requery_timeout">4</integer>
+    <!-- TODO: un-hardcode max_discovery_distance -->
+    <integer name="max_discovery_distance">5000</integer>
 </resources>

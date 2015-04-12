@@ -21,6 +21,7 @@ import edu.indiana.maxandblack.domeafavor.R;
 import edu.indiana.maxandblack.domeafavor.andrest.AndrestClient;
 import edu.indiana.maxandblack.domeafavor.andrest.RESTException;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
+import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
 
 
 public class FindOddjobActivity extends ActionBarActivity implements OddjobListFragment.OddjobListFragmentListener, OddjobFragment.OddjobFragmentListener {
@@ -77,7 +78,13 @@ public class FindOddjobActivity extends ActionBarActivity implements OddjobListF
                 @Override
                 protected ArrayList<Oddjob> doInBackground(Void... params) {
                     try {
-                        String requeryUrl = String.format("%s/debug/oddjobs", getString(R.string.dmfv_host));
+                        Location mainUserLocation = MainUser.getInstance().getLoc();
+                        String requeryUrl = getString(R.string.dmfv_discover_oddjobs,
+                                getString(R.string.dmfv_host),
+                                MainUser.getInstance().get_id().toString(),
+                                getResources().getInteger(R.integer.max_discovery_distance),
+                                mainUserLocation.getLatitude(),
+                                mainUserLocation.getLongitude());
                         JSONArray oddjobs = andrestDomeafavorClient.getArray(requeryUrl);
                         ArrayList<Oddjob> oddjobArrayList = new ArrayList<>(oddjobs.length());
                         for (int i = 0; i < oddjobs.length(); i++) {

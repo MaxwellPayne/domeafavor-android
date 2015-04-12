@@ -14,6 +14,7 @@ import edu.indiana.maxandblack.domeafavor.Login.LoginOrRegister;
 import edu.indiana.maxandblack.domeafavor.activities.createoddjob.CreateOddjobActivity;
 import edu.indiana.maxandblack.domeafavor.activities.findoddjob.FindOddjobActivity;
 import edu.indiana.maxandblack.domeafavor.activities.monitoroddjobs.MonitorOddjobsActivity;
+import edu.indiana.maxandblack.domeafavor.activities.selectfriends.SelectFriendsActivity;
 
 
 public class MainMenuActivity extends ActionBarActivity implements LoginOrRegister.OnLoginOrRegisterInteractionListener {
@@ -63,6 +64,12 @@ public class MainMenuActivity extends ActionBarActivity implements LoginOrRegist
         /* transition to the MonitorOddjobsActivity */
         Intent monitorOddjobsIntent = new Intent(this, MonitorOddjobsActivity.class);
         startActivity(monitorOddjobsIntent);
+    }
+
+    public void onDiscoverFriendsButtonClick(View v) {
+        Intent discoverFriendsIntent = new Intent(this, SelectFriendsActivity.class);
+        discoverFriendsIntent.putExtra(getString(R.string.intent_key_is_discovery_mode), true);
+        startActivity(discoverFriendsIntent);
     }
 
     @Override

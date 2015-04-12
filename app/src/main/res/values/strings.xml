@@ -9,6 +9,9 @@
     <string name="fb_app_id">927777533913452</string>
     <string name="title_facebook_login">Facebook Login</string>
     <string name="maps_intent_lat_lon_format">geo:%1$f,%2$f</string>
+    <string name="svprogress_default">Waiting...</string>
+    <string name="success">Success!</string>
+    <string name="failure">Failure</string>
 
     <string-array name="fb_read_permissions">
         <item>public_profile</item>
@@ -22,10 +25,16 @@
     <string name="dmfv_getuser_byfb">%1$s/users/facebook/%2$s</string>
     <string name="dmfv_createuser_byfb">%1$s/users/facebook</string>
     <string name="dmfv_create_oddjob">/oddjobs</string>
+    <string name="dmfv_modify_friend_byoid">%1$s/users/%2$s/friends</string>
+    <string name="dmfv_discover_oddjobs">%1$s/discover/%2$s/oddjobs/within/%3$d?lat=%4$f&amp;lon=%5$f</string>
+    <string name="dmfv_discover_friends">%1$s/discover/%2$s/users/%3$s?discardfriends=%4$s</string>
     <string name="dmfv_delegated_byme">%1$s/users/%2$s/oddjobs/delegated</string>
     <string name="dmfv_delegated_tome">$1$s/users/%2$s/oddjobs/delegatedto</string>
     <string name="dmfv_solicitor_jobs_bycompletion">%1$s/users/%2$s/oddjobs/delegated?lfinished=%3$s&amp;sfinished=%4$s</string>
     <string name="dmfv_lackey_jobs_bycompletion">%1$s/oddjobs/delegatedto/%2$s?lfinished=%3$s&amp;sfinished=%4$s</string>
+
+    <!-- pragma region - Error Messages -->
+    <string name="errmsg_no_jobs_nearyou">No oddjobs near you.</string>
 
 
     <string name="oddjobFragmentDateCreated">Date Created:</string>
@@ -39,6 +48,10 @@
 
     <!-- pragma region - CreateOddjob -->
     <string name="create_oddjob_svprogress">Creating...</string>
+
+    <!-- pragma region - SelectFriends -->
+    <string name="select_friends_add_confirm_msg">Want to add %1$s as a friend?</string>
+    <string name="select_friends_remove_confirm_msg">Want to remove %1$s as a friend?</string>
 
     <!-- pragma region - MonitorOddjobs -->
     <string name="monitor_oddjob_section_inprogress">In Progress</string>
@@ -57,11 +70,13 @@
 
     <!-- pragma region - Intent keys -->
     <string name="intent_key_friend_ids">friend_ids</string>
+    <string name="intent_key_is_discovery_mode">discovery_mode</string>
 
     <!-- pragma region - Querystring Params -->
     <string name="qstring_true">1</string>
     <string name="qstring_false">0</string>
     <string name="title_activity_monitor_oddjobs">MonitorOddjobsActivity</string>
     <string name="title_activity_edit_oddjob">EditOddjobActivity</string>
+    <string name="hint_discover_friends">Search by username</string>
 
 </resources>
