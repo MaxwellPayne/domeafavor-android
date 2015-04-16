@@ -79,4 +79,14 @@
     <string name="title_activity_edit_oddjob">EditOddjobActivity</string>
     <string name="hint_discover_friends">Search by username</string>
 
+    <!--Register Strings-->
+    <string name="RegisterTitle">Register</string>
+    <string name="FirstNameHint">First Name</string>
+    <string name="LastNameHint">Last Name</string>
+    <string name="EmailHint">Email</string>
+    <string name="BirthdayHint">Date of Birth "mm/dd/yyyy"</string>
+    <string name="LocationCheckBox">Location Services?</string>
+    <string name="SubmitText">Submit</string>
+    <string name="title_activity_register">Register</string>
+
 </resources>
