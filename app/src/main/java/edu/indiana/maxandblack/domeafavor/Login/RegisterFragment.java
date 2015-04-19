@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -91,6 +92,14 @@ public class RegisterFragment extends Fragment {
                 MainUser.getInstance().setFirstName(firstNameEditText.getText().toString());
                 MainUser.getInstance().setLastName(lastNameEditText.getText().toString());
                 MainUser.getInstance().setUsername(usernameEditText.getText().toString());
+                DateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+                try {
+                    Date date = format.parse(usernameEditText.getText().toString());
+                    MainUser.getInstance().setBirthday(date);
+                } catch (ParseException e) {
+                    System.out.println("Invalid Date!");
+                }
+                MainUser.getInstance().setEmail(emailEditText.getText().toString());
             }
         }
     };
