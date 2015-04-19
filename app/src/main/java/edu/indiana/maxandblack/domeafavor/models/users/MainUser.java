@@ -12,12 +12,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import edu.indiana.maxandblack.domeafavor.Login.OAuth2AccessToken;
 import edu.indiana.maxandblack.domeafavor.R;
 import edu.indiana.maxandblack.domeafavor.andrest.AndrestClient;
+import edu.indiana.maxandblack.domeafavor.models.datatypes.MongoDate;
 import edu.indiana.maxandblack.domeafavor.models.datatypes.Oid;
 
 /**
@@ -56,6 +58,14 @@ public class MainUser extends User {
 
     public void setUsername(String uname) {
         super.setUsername(uname);
+    }
+
+    public void setEmail(String addr) {
+        email = addr;
+    }
+
+    public void setBirthday(Date bday) {
+        birthday = new MongoDate(bday.getTime());
     }
 
     public void setFacebookId(String facebookId) {
@@ -167,6 +177,14 @@ public class MainUser extends User {
 
         if (username != null) {
             jsonData.put("username", username);
+        }
+
+        if (email != null) {
+            jsonData.put("email", email);
+        }
+
+        if (birthday != null) {
+            jsonData.put("birthday", birthday);
         }
 
         if (token != null) {

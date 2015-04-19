@@ -150,10 +150,6 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
          * and upon success transition into the app
          */
 
-        // TODO: support username creation in RegisterFragment
-        MainUser u = MainUser.getInstance();
-        u.setUsername("Username:" + fbUserData.getId());
-
          AsyncTask<Void, Void, RESTException> registerTask =  new AsyncTask<Void, Void, RESTException>() {
             @Override
             protected RESTException doInBackground(Void... params) {

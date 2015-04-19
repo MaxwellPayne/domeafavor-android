@@ -1,5 +1,6 @@
 package edu.indiana.maxandblack.domeafavor.models.users;
 
+import edu.indiana.maxandblack.domeafavor.models.datatypes.MongoDate;
 import edu.indiana.maxandblack.domeafavor.models.datatypes.Oid;
 import edu.indiana.maxandblack.domeafavor.models.ServerEntity;
 
@@ -12,6 +13,7 @@ import android.util.Log;
 
 import com.facebook.model.GraphUser;
 
+import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -23,6 +25,8 @@ public class User extends ServerEntity {
     protected String firstName;
     protected String lastName;
     protected String username;
+    protected String email;
+    protected MongoDate birthday;
     protected String facebookId;
     protected Location loc;
     protected GraphUser facebookProfile;
@@ -44,6 +48,14 @@ public class User extends ServerEntity {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public Date getBirthday() {
+        return birthday;
     }
 
     public String getFirstName() {
@@ -140,6 +152,11 @@ public class User extends ServerEntity {
                         location.setLatitude(locArray.getDouble(1));
                         setLoc(location);
                         break;
+                    case "email":
+                        email = json.getString(key);
+                        break;
+                    case "birthday":
+                        birthday = new MongoDate(json.getJSONObject(key));
                 }
             } catch (JSONException e) {
                 Log.d(TAG, e.toString());
