@@ -160,18 +160,13 @@ public class RegisterFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement RegisterFragmentListener");
         }
-
-        submitForm();
     }
+
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    private void submitForm() {
-        mListener.onRegisterFormCompletion();
     }
 
     private void dismiss() {
