@@ -41,6 +41,8 @@ public class RegisterFragment extends Fragment {
 
     private RegisterFragmentListener mListener;
 
+    private final DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+
     public RegisterFragment() {
         // Required empty public constructor
     }
@@ -59,6 +61,15 @@ public class RegisterFragment extends Fragment {
         usernameEditText = (EditText) v.findViewById(R.id.usernameEditText);
         submitButton = (Button) v.findViewById(R.id.submitButton);
         submitButton.setOnClickListener(submitButtonListener);
+
+        MainUser mainUser = MainUser.getInstance();
+        firstNameEditText.setText(mainUser.getFirstName());
+        lastNameEditText.setText(mainUser.getLastName());
+        emailEditText.setText(mainUser.getEmail());
+        Date birthday = mainUser.getBirthday();
+        if (birthday != null) {
+            birthdayEditText.setText(dateFormat.format(birthday));
+        }
 
         return v;
     }
@@ -89,9 +100,8 @@ public class RegisterFragment extends Fragment {
                 MainUser.getInstance().setFirstName(firstNameEditText.getText().toString());
                 MainUser.getInstance().setLastName(lastNameEditText.getText().toString());
                 MainUser.getInstance().setUsername(usernameEditText.getText().toString());
-                DateFormat format = new SimpleDateFormat("MM/dd/yyyy");
                 try {
-                    Date date = format.parse(usernameEditText.getText().toString());
+                    Date date = dateFormat.parse(birthdayEditText.getText().toString());
                     MainUser.getInstance().setBirthday(date);
                 } catch (ParseException e) {
                     System.out.println("Invalid Date!");

@@ -32,9 +32,12 @@ import edu.indiana.maxandblack.domeafavor.andrest.RESTException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
 
@@ -99,6 +102,20 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
                     MainUser.getInstance().setFacebookId(fbUserData.getId());
                     MainUser.getInstance().setFirstName(fbUserData.getFirstName());
                     MainUser.getInstance().setLastName(fbUserData.getLastName());
+
+                    SimpleDateFormat birthdayFmt = new SimpleDateFormat("MM/dd/yyyy");
+                    try {
+                        MainUser.getInstance().setBirthday(birthdayFmt.parse(graphUser.getBirthday()));
+                    } catch (ParseException e) {
+                        Log.d(TAG, "err parsing fb date");
+                    }
+
+                    Map<String, Object> fbUserMap = graphUser.asMap();
+                    final String emailKey = "email";
+                    if (fbUserMap.containsKey(emailKey)) {
+                        MainUser.getInstance().setEmail((String) fbUserMap.get(emailKey));
+                    }
+
                     MainUser.getInstance().setFacebookProfile(fbUserData);
                     MainUser.getInstance().setToken(new OAuth2AccessToken(session));
                     /* @hack - need to set custom username here */

@@ -16,7 +16,8 @@
     <string-array name="fb_read_permissions">
         <item>public_profile</item>
         <item>user_friends</item>
-        <!-- <item>user_birthday</item> -->
+        <item>user_birthday</item>
+        <item>email</item>
     </string-array>
     <string name="facebook_friends_endpoint">/%1$s/friends</string>
 
