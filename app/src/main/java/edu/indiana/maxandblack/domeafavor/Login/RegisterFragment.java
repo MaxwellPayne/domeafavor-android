@@ -97,6 +97,7 @@ public class RegisterFragment extends Fragment {
                     System.out.println("Invalid Date!");
                 }
                 MainUser.getInstance().setEmail(emailEditText.getText().toString());
+                mListener.onRegisterFormCompletion();
             }
         }
     };
@@ -122,6 +123,8 @@ public class RegisterFragment extends Fragment {
             errorMessage += "Your email must be filled out.\n";
         else if (!isValidEmailAddress(emailEditText.getText().toString()))
             errorMessage += "You must enter a valid email address.";
+        if (usernameEditText.getText().toString().isEmpty())
+            errorMessage += "Your username must be filled out.\n";
 
         return errorMessage;
     }
@@ -161,7 +164,6 @@ public class RegisterFragment extends Fragment {
                     + " must implement RegisterFragmentListener");
         }
     }
-
 
     @Override
     public void onDetach() {
