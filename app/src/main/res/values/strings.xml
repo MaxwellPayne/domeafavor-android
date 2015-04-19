@@ -88,5 +88,6 @@
     <string name="LocationCheckBox">Location Services?</string>
     <string name="SubmitText">Submit</string>
     <string name="title_activity_register">Register</string>
+    <string name="UsernameHint">Username</string>
 
 </resources>

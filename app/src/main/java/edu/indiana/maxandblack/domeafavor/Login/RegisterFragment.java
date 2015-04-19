@@ -35,6 +35,8 @@ public class RegisterFragment extends Fragment {
     private EditText lastNameEditText;
     private EditText birthdayEditText;
     private EditText emailEditText;
+    private EditText usernameEditText;
+
     private CheckBox locationCheckBox;
     private Button submitButton;
 
@@ -55,6 +57,7 @@ public class RegisterFragment extends Fragment {
         lastNameEditText = (EditText) v.findViewById(R.id.lastNameEditText);
         birthdayEditText = (EditText) v.findViewById(R.id.birthdayEditText);
         emailEditText = (EditText) v.findViewById(R.id.emailEditText);
+        usernameEditText = (EditText) v.findViewById(R.id.usernameEditText);
         locationCheckBox = (CheckBox) v.findViewById(R.id.locationCheckBox);
         submitButton = (Button) v.findViewById(R.id.submitButton);
         submitButton.setOnClickListener(submitButtonListener);
@@ -87,6 +90,7 @@ public class RegisterFragment extends Fragment {
             else {
                 MainUser.getInstance().setFirstName(firstNameEditText.getText().toString());
                 MainUser.getInstance().setLastName(lastNameEditText.getText().toString());
+                MainUser.getInstance().setUsername(usernameEditText.getText().toString());
             }
         }
     };
