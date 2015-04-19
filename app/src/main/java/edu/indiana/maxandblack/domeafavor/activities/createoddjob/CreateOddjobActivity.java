@@ -31,7 +31,7 @@ public class CreateOddjobActivity extends ActionBarActivity implements CreateOdd
 
     private final AndrestClient domeafavorAndrestClient = new AndrestClient();
     private Boolean postInProgress = false;
-    private ArrayList<User> authorizedLackeys = new ArrayList<>();
+    private ArrayList<User> invitedLackeys = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +69,10 @@ public class CreateOddjobActivity extends ActionBarActivity implements CreateOdd
                 /* retrieve the selected friend ids */
                 Bundle b = data.getExtras();
                 ArrayList<String> selectedFriendIds = data.getStringArrayListExtra(getString(R.string.intent_key_friend_ids));
-                authorizedLackeys.clear();
+                invitedLackeys.clear();
                 /* retrieve acutal user objects based on friend ids, authorize them */
                 for (String userId : selectedFriendIds) {
-                    authorizedLackeys.add(MainUser.getInstance().getFriend(new Oid(userId)));
+                    invitedLackeys.add(MainUser.getInstance().getFriend(new Oid(userId)));
                 }
             }
         }
@@ -81,7 +81,7 @@ public class CreateOddjobActivity extends ActionBarActivity implements CreateOdd
     public void launchFriendPicker() {
         /* bundle the pre-authorized lackey ids */
         ArrayList<String> authorizedLackeyIds = new ArrayList<>();
-        for (User friend : authorizedLackeys) {
+        for (User friend : invitedLackeys) {
             authorizedLackeyIds.add(friend.get_id().toString());
         }
         Intent authorizeLackeysIntent = new Intent(this, SelectFriendsActivity.class);
@@ -100,11 +100,11 @@ public class CreateOddjobActivity extends ActionBarActivity implements CreateOdd
     @Override
     public void onOddjobFormCompletion(final Oddjob oddjob) {
         /* extract authorized lackey objectIds */
-        Oid[] authorizedLackeyOids = new Oid[authorizedLackeys.size()];
-        for (int i = 0; i < authorizedLackeyOids.length; i++) {
-            authorizedLackeyOids[i] = authorizedLackeys.get(i).get_id();
+        Oid[] invitedLackeyOids = new Oid[invitedLackeys.size()];
+        for (int i = 0; i < invitedLackeyOids.length; i++) {
+            invitedLackeyOids[i] = invitedLackeys.get(i).get_id();
         }
-        oddjob.setAuthorizedLackeys(authorizedLackeyOids);
+        oddjob.setApplicants(invitedLackeyOids);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);

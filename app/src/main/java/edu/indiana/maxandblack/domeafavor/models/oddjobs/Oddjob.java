@@ -42,7 +42,9 @@ public class Oddjob extends ServerEntity implements Parcelable {
     protected MongoDate expiry;
     protected Payment payment;
     protected MongoDate lackeyMarkedFinished;
-    protected Oid[] authorizedLackeys;
+    //protected Oid[] authorizedLackeys;
+    protected Oid[] bannedLackeys = new Oid[0];
+    protected Oid[] applicants = new Oid[0];
 
     public Oddjob() {
         super();
@@ -81,12 +83,20 @@ public class Oddjob extends ServerEntity implements Parcelable {
         return expiry;
     }
 
-    public String[] getAuthorizedLackeyIds() {
-        String[] authorizedLackeyIds = new String[authorizedLackeys.length];
-        for (int i = 0; i < authorizedLackeys.length; i++) {
-            authorizedLackeyIds[i] = authorizedLackeys[i].toString();
+    public String[] getApplicants() {
+        String[] result = new String[applicants.length];
+        for (int i = 0; i < applicants.length; i++) {
+            result[i] = applicants[i].toString();
         }
-        return authorizedLackeyIds;
+        return result;
+    }
+
+    public String[] getBannedLackeys() {
+        String[] result = new String[bannedLackeys.length];
+        for (int i = 0; i < bannedLackeys.length; i++) {
+            result[i] = bannedLackeys[i].toString();
+        }
+        return result;
     }
 
     public CompletionState getCompletionState() {
@@ -143,8 +153,12 @@ public class Oddjob extends ServerEntity implements Parcelable {
         this.expiry = expiry;
     }
 
-    public void setAuthorizedLackeys(Oid[] authorizedLackeys) {
-        this.authorizedLackeys = authorizedLackeys;
+    public void setApplicants(Oid[] applicants) {
+        this.applicants = applicants;
+    }
+
+    public void setBannedLackeys(Oid[] bannedLackeys) {
+        this.bannedLackeys = bannedLackeys;
     }
 
     @Override
@@ -157,11 +171,12 @@ public class Oddjob extends ServerEntity implements Parcelable {
         HashMap<String, Object > jsonMap = new HashMap<String, Object>(){{
             put("solicitor", solicitorId.toString());
             put("title", title);
-            put("expiry", expiry);
+            put("expiry", expiry.toString());
             put("description", description);
             put("price", price);
             put("key_location", locArray);
-            put("authorized_lackeys", getAuthorizedLackeyIds());
+            put("banned_lackeys", getBannedLackeys());
+            put("applicants", getApplicants());
         }};
         try {
             Iterator<Map.Entry<String, Object>> jsonMapIterator = jsonMap.entrySet().iterator();
@@ -223,15 +238,25 @@ public class Oddjob extends ServerEntity implements Parcelable {
                     case "lackey_marked_finished":
                         lackeyMarkedFinished = new MongoDate(json.getJSONObject(key));
                         break;
-                    case "authorized_lackeys":
-                        JSONArray lackeyIdArray = json.getJSONArray(key);
-                        Oid[] lackeyStringArray = new Oid[lackeyIdArray.length()];
-                        for (int i = 0; i < lackeyIdArray.length(); i++) {
-                            JSONObject oIdObj = lackeyIdArray.getJSONObject(i);
-                            lackeyStringArray[i] = new Oid(oIdObj);
+                    case "banned_lackeys":
+                        JSONArray bannedLackeyIdArray = json.getJSONArray(key);
+                        Oid[] bannedLackeyArray = new Oid[bannedLackeyIdArray.length()];
+                        for (int i = 0; i < bannedLackeyArray.length; i++) {
+                            JSONObject oidObj = bannedLackeyIdArray.getJSONObject(i);
+                            bannedLackeyArray[i] = new Oid(oidObj);
                         }
-                        authorizedLackeys = lackeyStringArray;
+                        bannedLackeys = bannedLackeyArray;
                         break;
+                    case "applicants":
+                         JSONArray applicantJsonArray = json.getJSONArray(key);
+                        Oid[] applicantsArray = new Oid[applicantJsonArray.length()];
+                        for (int i = 0; i < applicantsArray.length; i++) {
+                            JSONObject oidObj = applicantJsonArray.getJSONObject(i);
+                            applicantsArray[i] = new Oid(oidObj);
+                        }
+                        applicants = applicantsArray;
+                        break;
+
                 }
             } catch (JSONException e) {
                 Log.d(TAG, e.toString());
@@ -268,10 +293,16 @@ public class Oddjob extends ServerEntity implements Parcelable {
         dest.writeDouble(keyLocation.getLatitude());
         dest.writeDouble(keyLocation.getLongitude());
 
-        int authorizedLackeyCount = authorizedLackeys.length;
-        dest.writeInt(authorizedLackeyCount);
-        for (Oid authLackeyId : authorizedLackeys) {
-            dest.writeString(authLackeyId.toString());
+        int bannedLackeyCount = bannedLackeys.length;
+        dest.writeInt(bannedLackeyCount);
+        for (Oid bannedLackeyId : bannedLackeys) {
+            dest.writeString(bannedLackeyId.toString());
+        }
+
+        int applicantCount = applicants.length;
+        dest.writeInt(applicantCount);
+        for (Oid applicantId : applicants) {
+            dest.writeString(applicantId.toString());
         }
     }
 
@@ -290,11 +321,18 @@ public class Oddjob extends ServerEntity implements Parcelable {
         keyLocation.setLatitude(lat);
         keyLocation.setLongitude(lon);
 
-        /* authorizedLackeys */
-        int authorizedLackeyCount = in.readInt();
-        authorizedLackeys = new Oid[authorizedLackeyCount];
-        for (int i = 0; i < authorizedLackeyCount; i++) {
-            authorizedLackeys[i] = new Oid(in.readString());
+        /* bannedLackeys */
+        int bannedLackeyCount = in.readInt();
+        bannedLackeys = new Oid[bannedLackeyCount];
+        for (int i = 0; i < bannedLackeyCount; i++) {
+            bannedLackeys[i] = new Oid(in.readString());
+        }
+
+        /* applicants */
+        int applicantCount = in.readInt();
+        applicants = new Oid[applicantCount];
+        for (int i = 0; i < applicantCount; i++) {
+            applicants[i] = new Oid(in.readString());
         }
     }
 }
