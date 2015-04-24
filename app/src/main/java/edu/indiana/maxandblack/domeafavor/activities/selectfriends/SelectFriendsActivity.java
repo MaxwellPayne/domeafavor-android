@@ -161,6 +161,7 @@ public class SelectFriendsActivity extends ActionBarActivity implements
             /* attach user data to this view through its tag */
             v.setTag(friendInFocus);
             v.setOnClickListener(listItemClickListener);
+            isSelectedCheckBox.setClickable(false);
             return v;
         }
     }

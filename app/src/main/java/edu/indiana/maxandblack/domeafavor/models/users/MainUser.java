@@ -2,6 +2,9 @@ package edu.indiana.maxandblack.domeafavor.models.users;
 
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.facebook.model.GraphUser;
@@ -29,6 +32,8 @@ public class MainUser extends User {
     private static final String TAG = "MainUser";
     private static final AndrestClient domeafavorClient = new AndrestClient();
     private static MainUser ourInstance = new MainUser();
+
+    private LocationManager locationManager;
     private OAuth2AccessToken token;
     private HashMap<Oid, User> friends = new HashMap<>();
 
@@ -82,6 +87,12 @@ public class MainUser extends User {
 
     public void setToken(OAuth2AccessToken t) {
         token = t;
+    }
+
+    public void startUpdatingLocation(Context context) {
+        final int msInMinute = 1000;
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, msInMinute, 0, locationListener);
     }
 
     public boolean addFriend(User friend, Context context) {
@@ -188,7 +199,7 @@ public class MainUser extends User {
         }
 
         if (token != null) {
-            jsonData.put("token", token.toJson());
+            jsonData.put("token", token.getPOSTJson());
         }
 
         /* friends should never be null */
@@ -227,4 +238,28 @@ public class MainUser extends User {
         // TODO: handle authorization for username:password situations
         req.addHeader("Authorization", this.getToken().toString());
     }
+
+    private final LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.d(TAG, "onLocationChanged");
+            MainUser.getInstance().setLoc(location);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
 }
+

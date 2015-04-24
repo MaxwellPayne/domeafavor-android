@@ -1,8 +1,13 @@
 package edu.indiana.maxandblack.domeafavor;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,14 +20,19 @@ import edu.indiana.maxandblack.domeafavor.activities.createoddjob.CreateOddjobAc
 import edu.indiana.maxandblack.domeafavor.activities.findoddjob.FindOddjobActivity;
 import edu.indiana.maxandblack.domeafavor.activities.monitoroddjobs.MonitorOddjobsActivity;
 import edu.indiana.maxandblack.domeafavor.activities.selectfriends.SelectFriendsActivity;
+import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
 
 
 public class MainMenuActivity extends ActionBarActivity implements LoginOrRegister.OnLoginOrRegisterInteractionListener {
+
+    private final String TAG = "MainMenuActivity";
+    LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+        MainUser.getInstance().startUpdatingLocation(this);
     }
 
 

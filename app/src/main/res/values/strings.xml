@@ -34,6 +34,9 @@
     <string name="dmfv_solicitor_jobs_bycompletion">%1$s/users/%2$s/oddjobs/delegated?lfinished=%3$s&amp;sfinished=%4$s</string>
     <string name="dmfv_lackey_jobs_bycompletion">%1$s/oddjobs/delegatedto/%2$s?lfinished=%3$s&amp;sfinished=%4$s</string>
 
+    <!-- vv DNE; will be POST endpoint for messages -->
+    <string name="dmfv_postmessage">%1$s/chatrooms/%2$s/message</string>
+
     <!-- pragma region - Error Messages -->
     <string name="errmsg_no_jobs_nearyou">No oddjobs near you.</string>
 

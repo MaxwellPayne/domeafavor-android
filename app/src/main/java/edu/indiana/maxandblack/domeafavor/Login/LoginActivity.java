@@ -92,7 +92,21 @@ public class LoginActivity extends ActionBarActivity implements LoginOrRegister.
     @Override
     public void onFacebookLoginSuccess(LoginOrRegister loginOrRegister, final Session session) {
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    MainUser.getInstance().setToken(new OAuth2AccessToken(session));
+                    OAuth2AccessToken shortLivedToken = new OAuth2AccessToken(session);
+                    //JSONObject res = andrestDomeafavorClient.post(getString(R.string.dmfv_exchangetoken_fb,
+                    //        getString(R.string.dmfv_host), "hi"), shortLivedToken.getPOSTJson());
+                    final String oddjobId = "5538338eb2eb6c7a7c775f8b";
+                    JSONObject res = andrestDomeafavorClient.get(getString(R.string.dmfv_host) + "/chatrooms/" + oddjobId);
+                } catch (RESTException e) {
 
+                }
+            }
+        }).start();
 
         Request meRequest = Request.newMeRequest(session, new Request.GraphUserCallback() {
             @Override

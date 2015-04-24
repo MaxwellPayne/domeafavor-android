@@ -13,7 +13,9 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
-public class OAuth2AccessToken {
+import edu.indiana.maxandblack.domeafavor.models.ServerEntity;
+
+public class OAuth2AccessToken extends ServerEntity {
 
     private final String FB_TOKEN_TYPE = "bearer";
     private String accessToken;
@@ -32,7 +34,12 @@ public class OAuth2AccessToken {
         expiresAt = sesh.getExpirationDate();
     }
 
-    public JSONObject toJson() {
+    @Override
+    protected void loadFromJson(JSONObject jsonObject) {
+        throw new RuntimeException("not implemented");
+    }
+
+    public JSONObject getPOSTJson() {
         try {
             JSONObject j = new JSONObject();
             j.put("access_token", accessToken);
