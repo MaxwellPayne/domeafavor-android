@@ -1,4 +1,3 @@
-include ':app', ':android-chat'
+include ':app'
 include ':SVProgressHUD'
 include ':pinned-section-listview'
-project(':android-chat').projectDir = new File('android-chat-starter/app')

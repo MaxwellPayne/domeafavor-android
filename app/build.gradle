@@ -33,7 +33,6 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:3.21.1'
     compile 'in.srain.cube:ultra-ptr:1.0.8@aar'
     compile 'javax.mail:mail:1.4'
-    compile project(':android-chat')
     compile project(':SVProgressHUD')
     compile project(':pinned-section-listview')
 

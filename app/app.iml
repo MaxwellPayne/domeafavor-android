@@ -96,7 +96,6 @@
     <orderEntry type="library" exported="" name="ultra-ptr-1.0.8" level="project" />
     <orderEntry type="module" module-name="pinned-section-listview" exported="" />
     <orderEntry type="module" module-name="SVProgressHUD" exported="" />
-    <orderEntry type="module" module-name="android-chat" exported="" />
   </component>
 </module>
 
