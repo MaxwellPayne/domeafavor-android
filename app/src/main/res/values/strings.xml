@@ -93,5 +93,7 @@
     <string name="SubmitText">Submit</string>
     <string name="title_activity_register">Register</string>
     <string name="UsernameHint">Username</string>
+    <string name="JobTitle">Create Job</string>
+    <string name="JobTitleTextHint">Job Title</string>
 
 </resources>

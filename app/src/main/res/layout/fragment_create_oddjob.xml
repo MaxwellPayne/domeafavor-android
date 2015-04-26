@@ -1,37 +1,50 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.indiana.maxandblack.domeafavor.activities.createoddjob.CreateOddjobFragment">
+    tools:context="edu.indiana.maxandblack.domeafavor.activities.createoddjob.CreateOddjobFragment"
+    android:orientation="vertical">
 
     <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/JobTitle"
+        android:id="@+id/oddJobTitle"
+        android:textSize="50dp"
+        android:layout_gravity="center_horizontal" />
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/jobTitleEditText"
+        android:hint="@string/JobTitleTextHint"
+        android:textAlignment="center" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Create Oddjob form under construction" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/jobPriceEditText"
+        android:hint="Job Price" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Create Oddjob"
-            android:id="@+id/createOddjobSubmitFormButton" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Oddjob"
+        android:id="@+id/createOddjobSubmitFormButton" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Cancel Creating"
-            android:id="@+id/createOddjobCancelButton" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cancel Creating"
+        android:id="@+id/createOddjobCancelButton" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Authorize Friends"
-            android:id="@+id/authorizeLackeysButton" />
-    </LinearLayout>
-</FrameLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Authorize Friends"
+        android:id="@+id/authorizeLackeysButton" />
+
+</LinearLayout>
