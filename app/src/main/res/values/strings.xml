@@ -36,6 +36,7 @@
 
     <!-- vv DNE; will be POST endpoint for messages -->
     <string name="dmfv_postmessage">%1$s/chatrooms/%2$s/message</string>
+    <string name="dmfv_get_chatroom">%1$s/chatrooms/%2$s</string>
 
     <!-- pragma region - Error Messages -->
     <string name="errmsg_no_jobs_nearyou">No oddjobs near you.</string>
@@ -93,5 +94,6 @@
     <string name="SubmitText">Submit</string>
     <string name="title_activity_register">Register</string>
     <string name="UsernameHint">Username</string>
+    <string name="title_activity_chat">ChatActivity</string>
 
 </resources>

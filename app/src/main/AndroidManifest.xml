@@ -56,6 +56,10 @@
             android:name=".activities.monitoroddjobs.EditOddjobActivity"
             android:label="@string/title_activity_edit_oddjob" >
         </activity>
+        <activity
+            android:name=".activities.chats.ChatActivity"
+            android:label="@string/title_activity_chat" >
+        </activity>
     </application>
 
 </manifest>

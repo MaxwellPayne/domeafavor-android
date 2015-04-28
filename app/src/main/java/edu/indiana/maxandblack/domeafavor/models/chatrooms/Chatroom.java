@@ -1,6 +1,8 @@
 package edu.indiana.maxandblack.domeafavor.models.chatrooms;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -21,25 +23,21 @@ import edu.indiana.maxandblack.domeafavor.models.chatrooms.Message;
 /**
  * Created by Max on 4/23/15.
  */
-public class Chatroom extends ServerEntity {
+public class Chatroom extends ServerEntity implements Parcelable {
 
-    private final String TAG = "Chatroom";
-    private ArrayList<Message> messages;
+    private static final String TAG = "Chatroom";
+    private ArrayList<Message> messages = new ArrayList<>();
 
     private final Semaphore canPostMessageSemaphore = new Semaphore(1);
     private final AndrestClient domeafavorClient = new AndrestClient();
 
-    public Message[] getMessages() {
-        if (messages == null) {
-            return new Message[0];
-        }
-        Message[] msgArray = new Message[messages.size()];
-        for (int i = 0; i < messages.size(); i++) {
-            msgArray[i] = messages.get(i);
-        }
-        return msgArray;
+    public ArrayList<Message> getMessages() {
+        return messages;
     }
 
+    public Chatroom(JSONObject json) {
+        loadFromJson(json);
+    }
 
     public void sendMessage(String body, final ChatroomListener listener, final Context context) {
         final Message m = new Message(body);
@@ -98,6 +96,25 @@ public class Chatroom extends ServerEntity {
     public JSONObject getPOSTJson() {
         return null;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        Message[] messagesAsArray = (Message[]) messages.toArray();
+        dest.writeParcelableArray(messagesAsArray, 0);
+    }
+
+    public Chatroom(Parcel from) {
+        Parcelable[] unpackedMessages = from.readParcelableArray(Message.class.getClassLoader());
+        for (int i = 0; i < unpackedMessages.length; i++) {
+            messages.add((Message) unpackedMessages[i]);
+        }
+    }
+
 
     public interface ChatroomListener {
         public void onMessagePostSuccess(Message msg);

@@ -1,5 +1,6 @@
 package edu.indiana.maxandblack.domeafavor.models.oddjobs;
 
+import edu.indiana.maxandblack.domeafavor.models.chatrooms.Chatroom;
 import edu.indiana.maxandblack.domeafavor.models.datatypes.MongoDate;
 import edu.indiana.maxandblack.domeafavor.models.datatypes.Oid;
 import edu.indiana.maxandblack.domeafavor.models.ServerEntity;
@@ -45,6 +46,8 @@ public class Oddjob extends ServerEntity implements Parcelable {
     //protected Oid[] authorizedLackeys;
     protected Oid[] bannedLackeys = new Oid[0];
     protected Oid[] applicants = new Oid[0];
+
+    private Chatroom chatroom;
 
     public Oddjob() {
         super();
@@ -129,6 +132,10 @@ public class Oddjob extends ServerEntity implements Parcelable {
         }
     }
 
+    public Chatroom getChatroom() {
+        return chatroom;
+    }
+
     public void setSolicitorId(Oid solicitorId) {
         this.solicitorId = solicitorId;
     }
@@ -159,6 +166,10 @@ public class Oddjob extends ServerEntity implements Parcelable {
 
     public void setBannedLackeys(Oid[] bannedLackeys) {
         this.bannedLackeys = bannedLackeys;
+    }
+
+    public void setChatroom(Chatroom chatroom) {
+        this.chatroom = chatroom;
     }
 
     @Override
@@ -304,6 +315,8 @@ public class Oddjob extends ServerEntity implements Parcelable {
         for (Oid applicantId : applicants) {
             dest.writeString(applicantId.toString());
         }
+
+        dest.writeParcelable(chatroom, 0);
     }
 
     private Oddjob(Parcel in) {
@@ -334,5 +347,7 @@ public class Oddjob extends ServerEntity implements Parcelable {
         for (int i = 0; i < applicantCount; i++) {
             applicants[i] = new Oid(in.readString());
         }
+
+        chatroom = in.readParcelable(Chatroom.class.getClassLoader());
     }
 }

@@ -18,6 +18,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 
 import edu.indiana.maxandblack.domeafavor.R;
+import edu.indiana.maxandblack.domeafavor.activities.chats.ChatActivity;
 import edu.indiana.maxandblack.domeafavor.andrest.AndrestClient;
 import edu.indiana.maxandblack.domeafavor.andrest.RESTException;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
@@ -139,5 +140,13 @@ public class FindOddjobActivity extends ActionBarActivity implements OddjobListF
                     .setMessage("Need to be able to open in Maps to view locations")
                     .show();
         }
+    }
+
+    @Override
+    public void onCommentClick(Oddjob job) {
+        Intent enterChatroomIntent = new Intent(this, ChatActivity.class);
+        enterChatroomIntent.putExtra(Oddjob.MAIN_SERIALIZED_ODDJOB_KEY, job);
+
+        startActivity(enterChatroomIntent);
     }
 }

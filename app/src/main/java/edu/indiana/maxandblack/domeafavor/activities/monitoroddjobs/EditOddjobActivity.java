@@ -60,4 +60,9 @@ public class EditOddjobActivity extends ActionBarActivity implements OddjobFragm
     public void onLocationClick(Location loc) {
         // TODO: handle location click for OddjobFragment
     }
+
+    @Override
+    public void onCommentClick(Oddjob job) {
+        // TODO: handle comment click for OddjobFragment
+    }
 }

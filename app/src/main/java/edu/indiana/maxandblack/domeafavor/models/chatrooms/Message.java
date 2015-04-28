@@ -1,5 +1,7 @@
 package edu.indiana.maxandblack.domeafavor.models.chatrooms;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -16,9 +18,9 @@ import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
 /**
  * Created by Max on 4/23/15.
  */
-public class Message extends ServerEntity {
+public class Message extends ServerEntity implements Parcelable {
 
-    private final String TAG = "Message";
+    private static final String TAG = "Message";
     private Oid author;
     private String body;
     private MongoDate createdAt;
@@ -28,7 +30,7 @@ public class Message extends ServerEntity {
         body = text;
     }
 
-    Message(JSONObject obj) {
+    public Message(JSONObject obj) {
         loadFromJson(obj);
     }
 
@@ -56,14 +58,18 @@ public class Message extends ServerEntity {
             try {
                 switch (key) {
                     case "_id":
-                        _id = new Oid(jsonObject.getString(key));
+                        _id = new Oid(jsonObject.getJSONObject(key));
+                        break;
                     case "author":
                         /* author only received as an _id, not whole User JSON */
-                        author = new Oid(jsonObject.getString(key));
+                        author = new Oid(jsonObject.getJSONObject(key));
+                        break;
                     case "body":
                         body = jsonObject.getString(key);
+                        break;
                     case "created_at":
                         createdAt = new MongoDate(jsonObject.getJSONObject(key));
+                        break;
                 }
             } catch (JSONException e) {
                 Log.d(TAG, e.toString());
@@ -95,5 +101,23 @@ public class Message extends ServerEntity {
             Log.d(TAG, e.toString());
             return null;
         }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(author.toString());
+        dest.writeString(body);
+        dest.writeLong(createdAt.getTime());
+    }
+
+    public Message(Parcel from) {
+        author = new Oid(from.readString());
+        body = from.readString();
+        createdAt = new MongoDate(from.readLong());
     }
 }

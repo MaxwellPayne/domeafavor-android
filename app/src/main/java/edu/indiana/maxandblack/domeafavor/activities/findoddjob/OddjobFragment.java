@@ -35,6 +35,7 @@ public class OddjobFragment extends Fragment implements View.OnClickListener {
     private TextView oddjobExpiresDateTextView;
     private TextView oddjobPriceTextView;
     private Button   oddjobViewLocationButton;
+    private Button   oddjobViewChatroomButton;
 
     public OddjobFragment() {
         // Required empty public constructor
@@ -67,6 +68,9 @@ public class OddjobFragment extends Fragment implements View.OnClickListener {
 
         oddjobViewLocationButton = (Button) v.findViewById(R.id.oddjobViewLocationButton);
         oddjobViewLocationButton.setOnClickListener(this);
+
+        oddjobViewChatroomButton = (Button) v.findViewById(R.id.oddjobViewChatroomButton);
+        oddjobViewChatroomButton.setOnClickListener(this);
 
         return v;
     }
@@ -107,6 +111,9 @@ public class OddjobFragment extends Fragment implements View.OnClickListener {
         if (v == oddjobViewLocationButton) {
             /* user wants to view this oddjob's location */
             mListener.onLocationClick(job.getKeyLocation());
+        } else if (v == oddjobViewChatroomButton) {
+            /* user wants to view this oddjob's chat */
+            mListener.onCommentClick(job);
         }
     }
 
@@ -122,6 +129,7 @@ public class OddjobFragment extends Fragment implements View.OnClickListener {
      */
     public interface OddjobFragmentListener {
         public void onLocationClick(Location loc);
-    }
 
+        public void onCommentClick(Oddjob job);
+    }
 }
