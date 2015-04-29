@@ -8,7 +8,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="fb_app_id">927777533913452</string>
     <string name="title_facebook_login">Facebook Login</string>
-    <string name="maps_intent_lat_lon_format">geo:%1$f,%2$f</string>
+    <string name="maps_intent_lat_lon_format">geo:%1$f,%2$f?q=%3$f,%4$f+(Destination)</string>
     <string name="svprogress_default">Waiting...</string>
     <string name="success">Success!</string>
     <string name="failure">Failure</string>
@@ -58,6 +58,7 @@
     <!-- pragma region - SelectFriends -->
     <string name="select_friends_add_confirm_msg">Want to add %1$s as a friend?</string>
     <string name="select_friends_remove_confirm_msg">Want to remove %1$s as a friend?</string>
+    <string name="select_friends_youhave_nofriends">You don\'t have any friends yet</string>
 
     <!-- pragma region - MonitorOddjobs -->
     <string name="monitor_oddjob_section_unassigned">Unassigned</string>
@@ -66,6 +67,7 @@
     <string name="monitor_oddjob_section_completed">Completed</string>
     <string name="monitor_oddjob_section_paymentdenied">Payment Denied</string>
     <string name="monitor_oddjob_section_expired">Expired</string>
+    <string name="monitor_oddjob_no_jobs_exist">You haven\'t solicited any jobs yet</string>
 
     <!-- pragma region - error messages -->
     <string name="general_server_error">Problem communicating with server</string>

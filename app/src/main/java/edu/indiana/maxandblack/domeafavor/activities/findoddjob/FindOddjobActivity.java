@@ -127,7 +127,9 @@ public class FindOddjobActivity extends ActionBarActivity implements OddjobListF
     /** Conform to OddjobFragmentListener **/
     public void onLocationClick(Location loc) {
         /* view this loc in maps app */
-        String uriString = String.format(getString(R.string.maps_intent_lat_lon_format), loc.getLatitude(), loc.getLongitude());
+        String uriString = String.format(getString(R.string.maps_intent_lat_lon_format),
+                loc.getLatitude(), loc.getLongitude(),
+                loc.getLatitude(), loc.getLongitude());
         Intent showMap = new Intent(Intent.ACTION_VIEW);
         showMap.setData(Uri.parse(uriString));
         if (showMap.resolveActivity(getPackageManager()) != null) {

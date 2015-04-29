@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hb.views.PinnedSectionListView;
 
@@ -348,6 +349,13 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
                             /* update the GUI with new data */
                             MonitorOddjobsListAdapter listAdapter = (MonitorOddjobsListAdapter) listView.getAdapter();
                             listAdapter.notifyDataSetChanged();
+                            if (listAdapter.getCount() == 0) {
+                                /* are no oddjobs to monitor */
+                                Toast.makeText(MonitorOddjobsActivity.this,
+                                        getString(R.string.monitor_oddjob_no_jobs_exist),
+                                        Toast.LENGTH_LONG).show();
+                                finish();
+                            }
                         }
                     });
                 } catch (Exception e) {

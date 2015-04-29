@@ -27,7 +27,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="View Oddjobs"
+            android:text="Discover Oddjobs"
             android:onClick="onViewOddjobsButtonClick"
             android:id="@+id/mainMenuActivityViewOddjobsButton"
             android:layout_alignParentTop="true"
@@ -39,7 +39,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Monitor Oddjobs"
+            android:text="Jobs I Solicited"
             android:onClick="onMonitorOddjobsButtonClick"
             android:id="@+id/mainMenuActivityMonitorOddjobsButton" />
 

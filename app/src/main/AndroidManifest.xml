@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -63,6 +64,10 @@
             android:name=".activities.chats.ChatActivity"
             android:label="@string/title_activity_chat" >
         </activity>
+
+
+        
+        <uses-library android:name="com.google.android.maps" />
     </application>
 
 </manifest>

@@ -81,6 +81,12 @@ public class SelectFriendsActivity extends ActionBarActivity implements
             for (String friendId : authorizedIds) {
                 selectedFriendSet.add(MainUser.getInstance().getFriend(new Oid(friendId)));
             }
+            if (selectedFriendSet.isEmpty()) {
+                /* trying to select existing friends when none exist; bail */
+                Toast.makeText(this, getString(R.string.select_friends_youhave_nofriends),
+                        Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
 
 
@@ -289,6 +295,10 @@ public class SelectFriendsActivity extends ActionBarActivity implements
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                if (discoverFriendsSearchView.getQuery().toString().length() == 0) {
+                                    /* don't modify anything if the query is blank right now */
+                                    return;
+                                }
                                 friendsDataSource.clear();
                                 friendsDataSource.addAll(possibleFriends);
                                 notifyDataSetChanged();
