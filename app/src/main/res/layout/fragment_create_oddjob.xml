@@ -16,26 +16,69 @@
 
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="15dp"
         android:id="@+id/jobTitleEditText"
         android:hint="@string/JobTitleTextHint"
         android:textAlignment="center"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/HorizontalFSWidthMargin"
+        android:layout_marginRight="@dimen/HorizontalFSWidthMargin"
+        android:maxLength="50" />
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/jobPriceEditText"
+        android:hint="Job Price (Max 999MC)"
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/HorizontalFSWidthMargin"
+        android:layout_marginRight="@dimen/HorizontalFSWidthMargin"
+        android:maxLength="3" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:ems="10"
+        android:id="@+id/jobDateEditText"
+        android:layout_weight="1"
+        android:hint="@string/JobDateHint"
+        android:layout_marginLeft="@dimen/HorizontalFSWidthMargin"
+        android:layout_marginRight="@dimen/HorizontalFSWidthMargin"
+        android:maxLength="10" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
+        android:inputType="textMultiLine"
         android:ems="10"
-        android:id="@+id/jobPriceEditText"
-        android:hint="Job Price"
-        android:layout_weight="1" />
+        android:id="@+id/jobDescriptionEditText"
+        android:hint="@string/JobDescriptionHint"
+        android:layout_weight="2"
+        android:layout_marginLeft="@dimen/HorizontalFSWidthMargin"
+        android:layout_marginRight="@dimen/HorizontalFSWidthMargin"
+        android:lines="3"
+        android:maxLines="3"
+        android:gravity="top|left"
+        android:maxLength="200" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Authorize Friends"
+        android:id="@+id/authorizeLackeysButton"
+        android:layout_marginLeft="@dimen/HorizontalFSWidthMargin"
+        android:layout_marginRight="@dimen/HorizontalFSWidthMargin" />
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/HorizontalFSWidthMargin"
+        android:layout_marginRight="@dimen/HorizontalFSWidthMargin">
 
         <CheckBox
             android:layout_width="0dp"
@@ -43,7 +86,8 @@
             android:text="@string/create_oddjob_usemy_location"
             android:id="@+id/createOddjobMyLocationCheckBox"
             android:layout_weight="1"
-            android:checked="false" />
+            android:checked="false"
+            android:layout_marginRight="4dp" />
 
         <Button
             android:layout_width="0dp"
@@ -51,27 +95,36 @@
             android:text="@string/create_oddjob_useother_location"
             android:id="@+id/createOddjobAnotherLocationButton"
             android:layout_weight="1"
-            android:enabled="true" />
+            android:enabled="true"
+            android:layout_marginLeft="4dp" />
 
     </LinearLayout>
 
-    <Button
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Authorize Friends"
-        android:id="@+id/authorizeLackeysButton" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/HorizontalFSWidthMargin"
+        android:layout_marginRight="@dimen/HorizontalFSWidthMargin">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cancel Creating"
-        android:id="@+id/createOddjobCancelButton" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel Creating"
+            android:id="@+id/createOddjobCancelButton"
+            android:layout_weight="1"
+            android:layout_marginRight="4dp"
+            android:textSize="20dp" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Create Oddjob"
-        android:id="@+id/createOddjobSubmitFormButton"
-        android:layout_weight="1" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create Oddjob"
+            android:id="@+id/createOddjobSubmitFormButton"
+            android:layout_weight="1"
+            android:layout_marginLeft="4dp"
+            android:textSize="20dp" />
+    </LinearLayout>
 
 </LinearLayout>
