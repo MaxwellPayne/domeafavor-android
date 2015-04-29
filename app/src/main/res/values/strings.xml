@@ -101,5 +101,7 @@
     <string name="create_oddjob_useother_location">Or choose another</string>
     <string name="JobTitleTextHint">Job Title</string>
     <string name="title_activity_chat">ChatActivity</string>
+    <string name="JobDateHint">Job Date "mm/dd/yyyy"</string>
+    <string name="JobDescriptionHint">Job Description</string>
 
 </resources>

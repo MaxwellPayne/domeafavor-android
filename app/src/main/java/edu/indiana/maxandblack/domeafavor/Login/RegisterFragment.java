@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 
 import java.text.DateFormat;
@@ -17,8 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
+import edu.indiana.maxandblack.domeafavor.Validation;
 
 import edu.indiana.maxandblack.domeafavor.R;
 import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
@@ -127,11 +125,11 @@ public class RegisterFragment extends Fragment {
             errorMessage += "Last Name must be composed of only letters.\n";
         if (birthdayEditText.getText().toString().isEmpty())
             errorMessage += "Your birthday must be filled out.\n";
-        else if (!isValidDate(birthdayEditText.getText().toString(), "MM/dd/yyyy"))
-            errorMessage += "Birthday must be a proper date of the format \"mm/dd/yyyy\n";
+        else if (!Validation.isValidDate(birthdayEditText.getText().toString(), "MM/dd/yyyy"))
+            errorMessage += "Birthday must be a proper date of the format \"mm/dd/yyyy\"\n";
         if (emailEditText.getText().toString().isEmpty())
             errorMessage += "Your email must be filled out.\n";
-        else if (!isValidEmailAddress(emailEditText.getText().toString()))
+        else if (!Validation.isValidEmailAddress(emailEditText.getText().toString()))
             errorMessage += "You must enter a valid email address.";
         if (usernameEditText.getText().toString().isEmpty())
             errorMessage += "Your username must be filled out.\n";
@@ -139,31 +137,6 @@ public class RegisterFragment extends Fragment {
         return errorMessage;
     }
 
-    public boolean isValidDate(String dateToValidate, String dateFormat) {
-        if (dateToValidate == null) {
-            return false;
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-        sdf.setLenient(false);
-
-        try {
-            //if the date is invalid a ParseException is thrown
-            Date date = sdf.parse(dateToValidate);
-        } catch (ParseException e) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isValidEmailAddress(String email) {
-        try {
-            InternetAddress emailAddress = new InternetAddress(email);
-            emailAddress.validate();
-        } catch (AddressException e) {
-            return false;
-        }
-        return true;
-    }
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);

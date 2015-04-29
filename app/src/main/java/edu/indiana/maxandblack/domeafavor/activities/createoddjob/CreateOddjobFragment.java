@@ -1,6 +1,8 @@
 package edu.indiana.maxandblack.domeafavor.activities.createoddjob;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -22,6 +25,7 @@ import edu.indiana.maxandblack.domeafavor.R;
 import edu.indiana.maxandblack.domeafavor.models.datatypes.MongoDate;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
 import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
+import edu.indiana.maxandblack.domeafavor.Validation;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,6 +38,10 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
     private CreateOddjobFragmentListener mListener;
     private Oddjob newJob;
 
+    private EditText jobTitleEditText;
+    private EditText jobPriceEditText;
+    private EditText jobDateEditText;
+    private EditText jobDescriptionEditText;
     private Button createOddjobSubmitFormButton;
     private Button createOddjobCancelButton;
     private Button authorizeLackeysButton;
@@ -66,6 +74,10 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_create_oddjob, container, false);
 
+        jobTitleEditText = (EditText) v.findViewById(R.id.jobTitleEditText);
+        jobPriceEditText = (EditText) v.findViewById(R.id.jobPriceEditText);
+        jobDateEditText = (EditText) v.findViewById(R.id.jobDateEditText);
+        jobDescriptionEditText = (EditText) v.findViewById(R.id.jobDescriptionEditText);
         createOddjobSubmitFormButton = (Button) v.findViewById(R.id.createOddjobSubmitFormButton);
         createOddjobCancelButton = (Button) v.findViewById(R.id.createOddjobCancelButton);
         authorizeLackeysButton = (Button) v.findViewById(R.id.authorizeLackeysButton);
@@ -105,7 +117,26 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
     public void onClick(View v) {
         /* intercept button clicks */
         if (v == createOddjobSubmitFormButton) {
-            submitOddjobForm();
+            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+
+            alertDialogBuilder.setTitle("Invalid Registration Information.");
+            //validateInput returns an empty string or an error message string
+            alertDialogBuilder.setMessage(validateInput());
+            alertDialogBuilder.setCancelable(false);
+            alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+
+            });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+
+            //if there is invalid input show an alert dialog, otherwise construct the main user
+            if (!validateInput().isEmpty())
+                alertDialog.show();
+            else
+                submitOddjobForm();
         } else if (v == createOddjobCancelButton) {
             cancelOddjobCreation();
         } else if (v == authorizeLackeysButton) {
@@ -136,6 +167,39 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
 
         createOddjobMyLocationCheckbox.setClickable(checkboxIsClickable);
         createOddjobMyLocationCheckbox.setChecked(isCheked);
+    }
+
+    public String validateInput() {
+        String errorMessage = "";
+        //Job Titles cannot be blank
+        if (jobTitleEditText.getText().toString().isEmpty()) {
+            errorMessage += "Job Title must be filled out.\n";
+        }
+        //Job Prices cannot be blank or less than zero (The soft keyboard
+        //should prevent negative numbers however)
+        if (jobPriceEditText.getText().toString().isEmpty()) {
+            errorMessage += "Job Price must be filled out.\n";
+        }
+        else if (Integer.parseInt(jobPriceEditText.getText().toString()) < 0) {
+            errorMessage += "Job Price must be a positive integer.\n";
+        }
+        //Job Date must not be blank, a valid date, and be the current date or later
+        if (jobDateEditText.getText().toString().isEmpty()) {
+            errorMessage += "Job Date must be filled out.\n";
+        }
+        else if (!Validation.isValidDate(jobDateEditText.getText().toString(), "MM/dd/yyyy")) {
+            errorMessage += "Job Date must be a proper date of the format \"mm/dd/yyyy\"\n";
+        }
+
+        else if (!Validation.dateIsTodayOrAfter(jobDateEditText.getText().toString(), "MM/dd/yyyy")) {
+            errorMessage += "Job Date must be today or later.\n";
+        }
+
+        if (jobDescriptionEditText.getText().toString().isEmpty()) {
+            errorMessage += "Job Description must be filled out.\n";
+        }
+
+        return errorMessage;
     }
 
     private void randomlyGenerateOddjobData() {
