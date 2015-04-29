@@ -25,13 +25,14 @@
         android:layout_marginRight="@dimen/HorizontalFSWidthMargin"
         android:maxLength="50" />
 
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="15dp"
         android:inputType="number"
         android:ems="10"
         android:id="@+id/jobPriceEditText"
-        android:hint="Job Price"
+        android:hint="Job Price (Max 999MC)"
         android:layout_weight="1"
         android:layout_marginLeft="@dimen/HorizontalFSWidthMargin"
         android:layout_marginRight="@dimen/HorizontalFSWidthMargin"
@@ -59,6 +60,8 @@
         android:layout_marginLeft="@dimen/HorizontalFSWidthMargin"
         android:layout_marginRight="@dimen/HorizontalFSWidthMargin"
         android:lines="3"
+        android:maxLines="3"
+        android:gravity="top|left"
         android:maxLength="200" />
 
     <Button
