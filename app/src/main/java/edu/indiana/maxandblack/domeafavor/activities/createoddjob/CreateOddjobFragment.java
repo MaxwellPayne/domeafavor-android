@@ -221,14 +221,12 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
     }
 
     private void submitOddjobForm() {
-        randomlyGenerateOddjobData();
         newJob.setSolicitorId(MainUser.getInstance().get_id());
         newJob.setTitle(jobTitleEditText.getText().toString());
         newJob.setPrice(Double.parseDouble(jobPriceEditText.getText().toString()));
         newJob.setDescription(jobDescriptionEditText.getText().toString());
         // Expiry Still needs to be done. Zach is unsure how to do this part. newJob.setExpiry();
 
-        // TODO: Replace random oddjob generation here with data from form widgets
         mListener.onOddjobFormCompletion(newJob);
     }
 
