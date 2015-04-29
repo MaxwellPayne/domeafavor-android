@@ -26,7 +26,7 @@ import java.util.Iterator;
 public class Oddjob extends ServerEntity implements Parcelable {
 
     public enum CompletionState {
-        IN_PROGRESS, PENDING_PAYMENT,
+        UNASSIGNED, IN_PROGRESS, PENDING_PAYMENT,
         PAYMENT_DENIED, COMPLETED, EXPIRED
     }
 
@@ -35,6 +35,7 @@ public class Oddjob extends ServerEntity implements Parcelable {
 
     private static final String TAG = "Oddjob";
     protected Oid solicitorId;
+    protected Oid lackeyId;
     protected String title;
     protected String description;
     protected double price;
@@ -43,7 +44,6 @@ public class Oddjob extends ServerEntity implements Parcelable {
     protected MongoDate expiry;
     protected Payment payment;
     protected MongoDate lackeyMarkedFinished;
-    //protected Oid[] authorizedLackeys;
     protected Oid[] bannedLackeys = new Oid[0];
     protected Oid[] applicants = new Oid[0];
 
@@ -60,6 +60,10 @@ public class Oddjob extends ServerEntity implements Parcelable {
 
     public String get_id() {
         return _id.toString();
+    }
+
+    public Oid getLackeyId() {
+        return lackeyId;
     }
 
     public double getPrice() {
@@ -104,6 +108,8 @@ public class Oddjob extends ServerEntity implements Parcelable {
 
     public CompletionState getCompletionState() {
         // TODO: Should rank .isExpired higher than all else b/c lackey might == null
+        //if ()
+
         final Date now = new Date();
         if (payment != null) {
             return CompletionState.COMPLETED;
@@ -127,8 +133,12 @@ public class Oddjob extends ServerEntity implements Parcelable {
                 return CompletionState.EXPIRED;
             }
         } else {
-            /* task is still in progress */
-            return CompletionState.IN_PROGRESS;
+            /* task has not expired */
+            if (lackeyId == null) {
+                return CompletionState.UNASSIGNED;
+            } else {
+                return CompletionState.IN_PROGRESS;
+            }
         }
     }
 
@@ -138,6 +148,10 @@ public class Oddjob extends ServerEntity implements Parcelable {
 
     public void setSolicitorId(Oid solicitorId) {
         this.solicitorId = solicitorId;
+    }
+
+    public void setLackeyId(Oid lackeyId) {
+        this.lackeyId = lackeyId;
     }
 
     public void setTitle(String title) {
@@ -189,6 +203,10 @@ public class Oddjob extends ServerEntity implements Parcelable {
             put("banned_lackeys", getBannedLackeys());
             put("applicants", getApplicants());
         }};
+        if (lackeyId != null) {
+            jsonMap.put("lackey", lackeyId.toString());
+        }
+
         try {
             Iterator<Map.Entry<String, Object>> jsonMapIterator = jsonMap.entrySet().iterator();
             while (jsonMapIterator.hasNext()) {
@@ -223,6 +241,13 @@ public class Oddjob extends ServerEntity implements Parcelable {
                             // TODO: solicitor is passed as full JSON, not just an _id string
                         }
                         break;
+                    case "lackey":
+                        JSONObject lackeyObj = json.getJSONObject(key);
+                        if (lackeyObj.has("$oid")) {
+                            lackeyId = new Oid(lackeyObj);
+                        } else {
+                            // TODO: lackey is passed as full JSON, not just an _id string
+                        }
                     case "title":
                         title = json.getString(key);
                         break;
@@ -297,6 +322,8 @@ public class Oddjob extends ServerEntity implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(_id.toString());
         dest.writeString(solicitorId.toString());
+        /* write lackeyId generically b/c it might be null */
+        dest.writeValue( lackeyId != null ? lackeyId.toString() : null );
         dest.writeString(title);
         dest.writeString(description);
         dest.writeDouble(price);
@@ -322,6 +349,9 @@ public class Oddjob extends ServerEntity implements Parcelable {
     private Oddjob(Parcel in) {
         _id = new Oid(in.readString());
         solicitorId = new Oid(in.readString());
+        /* load lackeyId generically b/c it might be null */
+        String lackeyIdString = (String) in.readValue(String.class.getClassLoader());
+        lackeyId = lackeyIdString != null ? new Oid(lackeyIdString) : null;
         title = in.readString();
         description = in.readString();
         price = in.readDouble();

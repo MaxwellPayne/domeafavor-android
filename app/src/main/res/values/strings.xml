@@ -25,6 +25,7 @@
     <string name="dmfv_host">http://52.10.123.150</string>
     <string name="dmfv_getuser_byfb">%1$s/users/facebook/%2$s</string>
     <string name="dmfv_createuser_byfb">%1$s/users/facebook</string>
+    <string name="dmfv_update_location">%1$s/users/%2$s/location</string>
     <string name="dmfv_create_oddjob">/oddjobs</string>
     <string name="dmfv_modify_friend_byoid">%1$s/users/%2$s/friends</string>
     <string name="dmfv_discover_oddjobs">%1$s/discover/%2$s/oddjobs/within/%3$d?lat=%4$f&amp;lon=%5$f</string>
@@ -59,6 +60,7 @@
     <string name="select_friends_remove_confirm_msg">Want to remove %1$s as a friend?</string>
 
     <!-- pragma region - MonitorOddjobs -->
+    <string name="monitor_oddjob_section_unassigned">Unassigned</string>
     <string name="monitor_oddjob_section_inprogress">In Progress</string>
     <string name="monitor_oddjob_section_pendingpayment">Awaiting Payment</string>
     <string name="monitor_oddjob_section_completed">Completed</string>
@@ -95,6 +97,8 @@
     <string name="title_activity_register">Register</string>
     <string name="UsernameHint">Username</string>
     <string name="JobTitle">Create Job</string>
+    <string name="create_oddjob_usemy_location">Use my location</string>
+    <string name="create_oddjob_useother_location">Or choose another</string>
     <string name="JobTitleTextHint">Job Title</string>
     <string name="title_activity_chat">ChatActivity</string>
 

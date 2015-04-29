@@ -1,6 +1,8 @@
 package edu.indiana.maxandblack.domeafavor.activities.createoddjob;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -8,6 +10,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONObject;
 import org.lcsky.SVProgressHUD;
@@ -28,10 +36,13 @@ public class CreateOddjobActivity extends ActionBarActivity implements CreateOdd
 
     /* request codes for sub-activities */
     public static final int SELECT_FRIENDS_REQUEST = 23;
+    public static final int PLACE_PICKER_REQUEST = 32;
 
     private final AndrestClient domeafavorAndrestClient = new AndrestClient();
     private Boolean postInProgress = false;
     private ArrayList<User> invitedLackeys = new ArrayList<>();
+
+    private CreateOddjobFragment createOddjobFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +85,20 @@ public class CreateOddjobActivity extends ActionBarActivity implements CreateOdd
                 for (String userId : selectedFriendIds) {
                     invitedLackeys.add(MainUser.getInstance().getFriend(new Oid(userId)));
                 }
+            }
+        } else if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place selectedPlace = PlacePicker.getPlace(data, this);
+                LatLng placeLatLong = selectedPlace.getLatLng();
+                /* convert Place into Location */
+                Location selectedLoc = new Location("");
+                selectedLoc.setLatitude(placeLatLong.latitude);
+                selectedLoc.setLongitude(placeLatLong.longitude);
+
+                createOddjobFragment.setJobLocation(selectedLoc);
+            } else {
+                /* some sort of failure, cannot use location */
+                createOddjobFragment.setJobLocation(null);
             }
         }
     }
@@ -148,5 +173,17 @@ public class CreateOddjobActivity extends ActionBarActivity implements CreateOdd
     public void onCreateOddjobCancel() {
         /* abandon this activity */
         finish();
+    }
+
+    @Override
+    public void launchPlacePicker(CreateOddjobFragment sender) throws
+            GooglePlayServicesNotAvailableException,
+            GooglePlayServicesRepairableException {
+
+        /* store the calling fragment so that it can be called later */
+        createOddjobFragment = sender;
+        /* launch the place picker */
+        PlacePicker.IntentBuilder placePickerIntent = new PlacePicker.IntentBuilder();
+        startActivityForResult(placePickerIntent.build(this), PLACE_PICKER_REQUEST);
     }
 }

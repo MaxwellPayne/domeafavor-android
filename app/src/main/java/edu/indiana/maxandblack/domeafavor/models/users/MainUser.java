@@ -22,6 +22,7 @@ import java.util.Map;
 import edu.indiana.maxandblack.domeafavor.Login.OAuth2AccessToken;
 import edu.indiana.maxandblack.domeafavor.R;
 import edu.indiana.maxandblack.domeafavor.andrest.AndrestClient;
+import edu.indiana.maxandblack.domeafavor.andrest.RESTException;
 import edu.indiana.maxandblack.domeafavor.models.datatypes.MongoDate;
 import edu.indiana.maxandblack.domeafavor.models.datatypes.Oid;
 
@@ -34,6 +35,7 @@ public class MainUser extends User {
     private static MainUser ourInstance = new MainUser();
 
     private LocationManager locationManager;
+    private Context mainAppContext;
     private OAuth2AccessToken token;
     private HashMap<Oid, User> friends = new HashMap<>();
 
@@ -45,8 +47,16 @@ public class MainUser extends User {
         super(null);
     }
 
+    public boolean doesExistOnServer() {
+        return _id != null;
+    }
+
     public OAuth2AccessToken getToken() {
         return token;
+    }
+
+    public Context getMainAppContext() {
+        return mainAppContext;
     }
 
     public void set_id(String _id) {
@@ -89,10 +99,14 @@ public class MainUser extends User {
         token = t;
     }
 
-    public void startUpdatingLocation(Context context) {
-        final int msInMinute = 1000;
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, msInMinute, 0, locationListener);
+    public void setMainContext(Context mainContext) {
+        this.mainAppContext = mainContext;
+    }
+
+    public void startUpdatingLocation() {
+        final int msInMinute = 1000 * 60;
+        locationManager = (LocationManager) mainAppContext.getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, msInMinute, 0, locationListener);
     }
 
     public boolean addFriend(User friend, Context context) {
@@ -209,26 +223,19 @@ public class MainUser extends User {
         }
         jsonData.put("friends", friendIds);
 
+        double lat = 0, lon = 0;
         if (loc != null) {
-            try {
-                JSONArray locArray = new JSONArray();
-                locArray.put(0, loc.getLatitude());
-                locArray.put(1, loc.getLongitude());
-                jsonData.put("loc", locArray);
-            } catch (JSONException e) {
-                Log.d(TAG, e.toString());
-            }
+            lat = loc.getLatitude();
+            lon = loc.getLongitude();
+        }
 
-        } else {
-            /* @hack - using dummy coordinates right now b/c haven't yet asked for location permissions */
-            JSONArray l = new JSONArray();
-            try {
-                l.put(0, 0.0);
-                l.put(1, 0.0);
-                jsonData.put("loc", l);
-            } catch (JSONException e) {
-                Log.d(TAG, e.toString());
-            }
+        try {
+            JSONArray locArray = new JSONArray();
+            locArray.put(0, lat);
+            locArray.put(1, lon);
+            jsonData.put("loc", locArray);
+        } catch (JSONException e) {
+            Log.d(TAG, e.toString());
         }
 
         return new JSONObject(jsonData);
@@ -244,6 +251,22 @@ public class MainUser extends User {
         public void onLocationChanged(Location location) {
             Log.d(TAG, "onLocationChanged");
             MainUser.getInstance().setLoc(location);
+            if (mainAppContext != null && doesExistOnServer()) {
+                /* can update the location on server */
+                final String endpoint = mainAppContext.getString(R.string.dmfv_update_location,
+                        mainAppContext.getString(R.string.dmfv_host),
+                        _id.toString());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            domeafavorClient.put(endpoint, getPOSTJson());
+                        } catch (RESTException e) {
+                            Log.d(TAG, "Failed to PUT location");
+                        }
+                    }
+                }).start();
+            }
         }
 
         @Override

@@ -60,7 +60,7 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
         }
     }
 
-    final int NUMBER_OF_SECTIONS = 5;
+    protected final static int NUMBER_OF_SECTIONS = 6;
     protected OddjobSection[] oddjobSections = new OddjobSection[NUMBER_OF_SECTIONS];
 
 
@@ -70,7 +70,12 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
         setContentView(R.layout.activity_monitor_oddjobs);
 
         oddjobSections = new OddjobSection[] {
-            /* jobs still in progress */
+            /* jobs not assigned to a lackey */
+                new OddjobSection(getString(R.string.monitor_oddjob_section_unassigned),
+                        Oddjob.CompletionState.UNASSIGNED,
+                        new ArrayList<Oddjob>()),
+
+            /* jobs in progress */
                 new OddjobSection(getString(R.string.monitor_oddjob_section_inprogress),
                         Oddjob.CompletionState.IN_PROGRESS,
                         new ArrayList<Oddjob>()),

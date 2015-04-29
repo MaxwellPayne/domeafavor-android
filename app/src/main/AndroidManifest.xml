@@ -19,6 +19,9 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/fb_app_id" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA5b1gPs7M655S9uHYPxiJXRam0BOAGX-o" />
 
         <activity
             android:name=".Login.LoginActivity"

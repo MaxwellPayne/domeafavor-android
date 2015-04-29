@@ -1,21 +1,24 @@
 package edu.indiana.maxandblack.domeafavor.activities.createoddjob;
 
 import android.app.Activity;
-import android.net.Uri;
+import android.location.Location;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.content.Intent;
+import android.widget.CheckBox;
+import android.widget.Toast;
+
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
 import edu.indiana.maxandblack.domeafavor.R;
-import edu.indiana.maxandblack.domeafavor.activities.selectfriends.SelectFriendsActivity;
 import edu.indiana.maxandblack.domeafavor.models.datatypes.MongoDate;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
 import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
@@ -34,6 +37,9 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
     private Button createOddjobSubmitFormButton;
     private Button createOddjobCancelButton;
     private Button authorizeLackeysButton;
+    private Button createOddjobAnotherLocationButton;
+    private CheckBox createOddjobMyLocationCheckbox;
+
 
     private static Random generator = new Random();
 
@@ -63,10 +69,17 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
         createOddjobSubmitFormButton = (Button) v.findViewById(R.id.createOddjobSubmitFormButton);
         createOddjobCancelButton = (Button) v.findViewById(R.id.createOddjobCancelButton);
         authorizeLackeysButton = (Button) v.findViewById(R.id.authorizeLackeysButton);
+        createOddjobAnotherLocationButton = (Button) v.findViewById(R.id.createOddjobAnotherLocationButton);
+        createOddjobMyLocationCheckbox = (CheckBox) v.findViewById(R.id.createOddjobMyLocationCheckBox);
 
         createOddjobSubmitFormButton.setOnClickListener(this);
         createOddjobCancelButton.setOnClickListener(this);
         authorizeLackeysButton.setOnClickListener(this);
+        createOddjobAnotherLocationButton.setOnClickListener(this);
+        createOddjobMyLocationCheckbox.setOnClickListener(this);
+
+        /* coerce locationCheckbox to initialize with MainUser's location */
+        setJobLocation(null);
 
         return v;
     }
@@ -97,7 +110,32 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
             cancelOddjobCreation();
         } else if (v == authorizeLackeysButton) {
             mListener.launchFriendPicker();
+        } else if (v == createOddjobAnotherLocationButton) {
+            /* prompt user to select a different location */
+            try {
+                mListener.launchPlacePicker(this);
+            } catch (GooglePlayServicesNotAvailableException
+                     | GooglePlayServicesRepairableException e) {
+                /* failed to get Google Play Services */
+                Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
+            }
+        } else if (v == createOddjobMyLocationCheckbox) {
+            /* fall back to the MainUser's location */
+            setJobLocation(null);
         }
+    }
+
+    public void setJobLocation(Location loc) {
+        boolean didPickACustomLoc = loc != null;
+        /* use loc if exists, else fall back on MainUser's location */
+        newJob.setKeyLocation( didPickACustomLoc ? loc : MainUser.getInstance().getLoc() );
+        /* can click if not using MainUser loc */
+        boolean checkboxIsClickable = didPickACustomLoc;
+        /* checkbox will be checked when using MainUser's location */
+        boolean isCheked = ! didPickACustomLoc;
+
+        createOddjobMyLocationCheckbox.setClickable(checkboxIsClickable);
+        createOddjobMyLocationCheckbox.setChecked(isCheked);
     }
 
     private void randomlyGenerateOddjobData() {
@@ -113,7 +151,7 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
 
         final float maxCash = 200.0f, minCash = 0.0f;
         newJob.setPrice(Math.random() * (maxCash - minCash) + minCash);
-        newJob.setKeyLocation(MainUser.getInstance().getLoc());
+        //newJob.setKeyLocation(MainUser.getInstance().getLoc());
 
     }
 
@@ -142,6 +180,9 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
         public void onOddjobFormCompletion(Oddjob oddjob);
         public void onCreateOddjobCancel();
         public void launchFriendPicker();
+        public void launchPlacePicker(CreateOddjobFragment sender) throws
+                GooglePlayServicesNotAvailableException,
+                GooglePlayServicesRepairableException;
     }
 
 }

@@ -1,5 +1,6 @@
 package edu.indiana.maxandblack.domeafavor.activities.monitoroddjobs;
 
+import android.content.Intent;
 import android.location.Location;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import edu.indiana.maxandblack.domeafavor.activities.chats.ChatActivity;
 import edu.indiana.maxandblack.domeafavor.activities.findoddjob.OddjobFragment;
 import edu.indiana.maxandblack.domeafavor.models.oddjobs.Oddjob;
 import edu.indiana.maxandblack.domeafavor.R;
@@ -63,6 +65,9 @@ public class EditOddjobActivity extends ActionBarActivity implements OddjobFragm
 
     @Override
     public void onCommentClick(Oddjob job) {
-        // TODO: handle comment click for OddjobFragment
+        Intent enterChatroomIntent = new Intent(this, ChatActivity.class);
+        enterChatroomIntent.putExtra(Oddjob.MAIN_SERIALIZED_ODDJOB_KEY, job);
+
+        startActivity(enterChatroomIntent);
     }
 }

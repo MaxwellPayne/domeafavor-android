@@ -26,13 +26,13 @@ import edu.indiana.maxandblack.domeafavor.models.users.MainUser;
 public class MainMenuActivity extends ActionBarActivity implements LoginOrRegister.OnLoginOrRegisterInteractionListener {
 
     private final String TAG = "MainMenuActivity";
-    LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-        MainUser.getInstance().startUpdatingLocation(this);
+        MainUser.getInstance().setMainContext(this);
+        MainUser.getInstance().startUpdatingLocation();
     }
 
 
