@@ -123,8 +123,8 @@ public class OddjobListFragment extends ListFragment {
             View returnView = convertView;
             /* editing the CachedView here will change properties on the returnView */
             String ID = job.get_id();
-            cachedView.idTextView.setText(job.get_id());
-            cachedView.titleTextView.setText(job.getTitle());
+            cachedView.idTextView.setText(job.getTitle());
+            cachedView.titleTextView.setText(job.getDescription());
 
             return returnView;
         }

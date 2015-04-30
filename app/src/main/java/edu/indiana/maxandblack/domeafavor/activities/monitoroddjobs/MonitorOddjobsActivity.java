@@ -220,7 +220,8 @@ public final class MonitorOddjobsActivity extends ActionBarActivity implements V
                 Oddjob listItem = (Oddjob) getItem(position);
                 String viewText = listItem.get_id();
                 TextView oddjobListItemIdTextView = (TextView) v.findViewById(R.id.oddjobListitemIdTextView);
-                oddjobListItemIdTextView.setText(viewText);
+                oddjobListItemIdTextView.setText(listItem.getTitle());
+
 
                 v.setTag(listItem);
             }
