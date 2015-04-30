@@ -161,6 +161,8 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
         boolean didPickACustomLoc = loc != null;
         /* use loc if exists, else fall back on MainUser's location */
         newJob.setKeyLocation( didPickACustomLoc ? loc : MainUser.getInstance().getLoc() );
+
+        Location l = MainUser.getInstance().getLoc();
         /* can click if not using MainUser loc */
         boolean checkboxIsClickable = didPickACustomLoc;
         /* checkbox will be checked when using MainUser's location */
@@ -181,19 +183,20 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
         if (jobPriceEditText.getText().toString().isEmpty()) {
             errorMessage += "Job Price must be filled out.\n";
         }
-        else if (Integer.parseInt(jobPriceEditText.getText().toString()) < 0) {
-            errorMessage += "Job Price must be a positive integer.\n";
-        }
-        //Job Date must not be blank, a valid date, and be the current date or later
-        if (jobDateEditText.getText().toString().isEmpty()) {
-            errorMessage += "Job Date must be filled out.\n";
-        }
-        else if (!Validation.isValidDate(jobDateEditText.getText().toString(), "MM/dd/yyyy")) {
-            errorMessage += "Job Date must be a proper date of the format \"mm/dd/yyyy\"\n";
+        else if (Double.parseDouble(jobPriceEditText.getText().toString()) > 200.0) {
+            errorMessage += "Job Price cannot exceed $200.\n";
         }
 
-        else if (!Validation.dateIsTodayOrAfter(jobDateEditText.getText().toString(), "MM/dd/yyyy")) {
-            errorMessage += "Job Date must be today or later.\n";
+        // TODO: Replace the hidden date widget with datetime widget
+        //Job Date must not be blank, a valid date, and be the current date or later
+        if (false) {
+            if (jobDateEditText.getText().toString().isEmpty()) {
+                errorMessage += "Job Date must be filled out.\n";
+            } else if (!Validation.isValidDate(jobDateEditText.getText().toString(), "MM/dd/yyyy")) {
+                errorMessage += "Job Date must be a proper date of the format \"mm/dd/yyyy\"\n";
+            } else if (!Validation.dateIsTodayOrAfter(jobDateEditText.getText().toString(), "MM/dd/yyyy")) {
+                errorMessage += "Job Date must be today or later.\n";
+            }
         }
 
         if (jobDescriptionEditText.getText().toString().isEmpty()) {
@@ -203,29 +206,14 @@ public class CreateOddjobFragment extends Fragment implements View.OnClickListen
         return errorMessage;
     }
 
-    private void randomlyGenerateOddjobData() {
-        /* @hack - Randomly generating oddjob data here for debug purposes, UI not yet designed */
-        newJob.setSolicitorId(MainUser.getInstance().get_id());
-        newJob.setTitle(randString(250));
-        newJob.setDescription(randString(1000));
-        Calendar expiryCalendar = Calendar.getInstance();
-        expiryCalendar.setTime(new Date());
-        final int HOURS_IN_YEAR = 8766;
-        expiryCalendar.add(Calendar.HOUR_OF_DAY, generator.nextInt() % (HOURS_IN_YEAR * 2));
-        newJob.setExpiry(new MongoDate(expiryCalendar.getTime()));
-
-        final float maxCash = 200.0f, minCash = 0.0f;
-        newJob.setPrice(Math.random() * (maxCash - minCash) + minCash);
-        //newJob.setKeyLocation(MainUser.getInstance().getLoc());
-
-    }
-
     private void submitOddjobForm() {
         newJob.setSolicitorId(MainUser.getInstance().get_id());
         newJob.setTitle(jobTitleEditText.getText().toString());
         newJob.setPrice(Double.parseDouble(jobPriceEditText.getText().toString()));
         newJob.setDescription(jobDescriptionEditText.getText().toString());
-        // Expiry Still needs to be done. Zach is unsure how to do this part. newJob.setExpiry();
+        // TODO: Expiry handled by hack
+        final int msInDay = 1000 * 60 * 60 * 24;
+        newJob.setExpiry(new MongoDate(new Date().getTime() + msInDay));
 
         mListener.onOddjobFormCompletion(newJob);
     }

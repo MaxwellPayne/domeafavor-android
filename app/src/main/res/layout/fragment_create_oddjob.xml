@@ -29,14 +29,14 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="15dp"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         android:ems="10"
         android:id="@+id/jobPriceEditText"
-        android:hint="Job Price (Max 999MC)"
+        android:hint="Job Price ($0 - 200)"
         android:layout_weight="1"
         android:layout_marginLeft="@dimen/HorizontalFSWidthMargin"
         android:layout_marginRight="@dimen/HorizontalFSWidthMargin"
-        android:maxLength="3" />
+        android:maxLength="6" />
 
     <EditText
         android:layout_width="match_parent"
@@ -47,7 +47,8 @@
         android:hint="@string/JobDateHint"
         android:layout_marginLeft="@dimen/HorizontalFSWidthMargin"
         android:layout_marginRight="@dimen/HorizontalFSWidthMargin"
-        android:maxLength="10" />
+        android:maxLength="10"
+        android:visibility="invisible" />
 
     <EditText
         android:layout_width="match_parent"
@@ -96,7 +97,8 @@
             android:id="@+id/createOddjobAnotherLocationButton"
             android:layout_weight="1"
             android:enabled="true"
-            android:layout_marginLeft="4dp" />
+            android:layout_marginLeft="4dp"
+            android:textSize="@dimen/abc_text_size_caption_material" />
 
     </LinearLayout>
 

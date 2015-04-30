@@ -81,7 +81,7 @@ public class SelectFriendsActivity extends ActionBarActivity implements
             for (String friendId : authorizedIds) {
                 selectedFriendSet.add(MainUser.getInstance().getFriend(new Oid(friendId)));
             }
-            if (selectedFriendSet.isEmpty()) {
+            if (friendsDataSource.isEmpty()) {
                 /* trying to select existing friends when none exist; bail */
                 Toast.makeText(this, getString(R.string.select_friends_youhave_nofriends),
                         Toast.LENGTH_SHORT).show();

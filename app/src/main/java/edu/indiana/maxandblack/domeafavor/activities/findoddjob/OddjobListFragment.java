@@ -77,8 +77,9 @@ public class OddjobListFragment extends ListFragment {
     public void setOddjobs(ArrayList<Oddjob> oddjobsList) {
         /* change the data set and notify the adapter */
         if (oddjobsList.size() == 0) {
-            Toast.makeText(getActivity(), getString(R.string.errmsg_no_jobs_nearyou), Toast.LENGTH_LONG)
+            Toast.makeText(getActivity(), getString(R.string.errmsg_no_jobs_nearyou), Toast.LENGTH_SHORT)
                     .show();
+            //getActivity().finish();
         } else {
             oddjobs.clear();
             oddjobs.addAll(oddjobsList);
